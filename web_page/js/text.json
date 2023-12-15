@@ -27,6 +27,10 @@
         "tr-TR": "Takım Üyeleri",
         "en-GB": "Team Members"
     },
+    "advisor-title": {
+        "tr-TR": "Danışmanımız",
+        "en-GB": "Our Advisor"
+    },
     "language-button-title": {
         "tr-TR": "Dil",
         "en-GB": "Language"
