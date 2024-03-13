@@ -16,7 +16,7 @@ public class ResponsePayload <T>{
   private T data;
 
   public ResponsePayload(T data){
-    this.message = "ResponseMessageEnum.EMPTY.getMessage()";
+    this.message = ResponseMessageEnum.EMPTY.getMessage();
     this.success = true;
     this.data = data;
   }
