@@ -60,12 +60,12 @@ public class CandleChartServiceImpl implements CandleChartService {
     Executors.newSingleThreadExecutor().submit(() -> {
       ResponsePayload<CandleDTO> lastCandleByChartId = candleService.findLastCandleByChartId(
           finalCandleChartDTO.getId());
-      Long startTime =
+      long startTime =
           lastCandleByChartId.getSuccess() ? lastCandleByChartId.getData().getCloseTime().getTime()
               : 1000L;
       while(true){
         RestTemplate rt = new RestTemplate();
-        URI uri = UriComponentsBuilder.fromHttpUrl("https://api.binance.com" + "/api/v3/klines")
+        URI uri = UriComponentsBuilder.fromHttpUrl("https://api.binance.com/api/v3/klines")
             .queryParam("startTime", startTime)
             .queryParam("symbol", finalCandleChartDTO.getCurrencyPair().getSymbol())
             .queryParam("interval", finalCandleChartDTO.getTimeInterval().getName())
