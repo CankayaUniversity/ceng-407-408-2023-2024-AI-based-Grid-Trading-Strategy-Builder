@@ -4,6 +4,8 @@ import com.gridy.strategybuilder.enumeration.CandleChartTimeIntervalEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,15 +35,16 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class CandleChart {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(unique = true, nullable = false)
-  private UUID id;
+  private Long id;
 
   @ManyToOne()
   @JoinColumn(name = "CURRENCY_PAIR_ID", nullable = false)
   private CurrencyPair currencyPair;
 
   @Column(name = "TIME_INTERVAL", nullable = false)
+  @Enumerated(value = EnumType.STRING)
   private CandleChartTimeIntervalEnum timeInterval;
 
   @CreatedDate

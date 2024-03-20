@@ -5,9 +5,10 @@ import lombok.Getter;
 @Getter
 public enum ResponseMessageEnum {
   EMPTY(1L, ""),
-  EMAIL_EXISTS(2L, "An account with this email already exists."),
-  USERNAME_EXISTS(2L, "An account with this username already exists."),
-  RECORD_DOES_NOT_EXISTS(3L, "This record does not exist.");
+  UNEXPECTED_ERROR(2L, "An unexpected error was encountered!"),
+  EMAIL_EXISTS(3L, "An account with this email already exists."),
+  USERNAME_EXISTS(4L, "An account with this username already exists."),
+  RECORD_DOES_NOT_EXISTS(5L, "This record does not exist.");
 
   private final Long code;
   private final String message;

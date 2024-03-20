@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class CandleChartDTO {
 
-  private UUID id;
+  private Long id;
   private CurrencyPairDTO currencyPair;
   private CandleChartTimeIntervalEnum timeInterval;
   private Date createdAt;

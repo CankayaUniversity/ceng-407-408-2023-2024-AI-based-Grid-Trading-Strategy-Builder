@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CurrencyPairDTO {
 
-  private UUID id;
+  private Long id;
   private String symbol;
   private CurrencyDTO baseCurrency;
   private CurrencyDTO quoteCurrency;

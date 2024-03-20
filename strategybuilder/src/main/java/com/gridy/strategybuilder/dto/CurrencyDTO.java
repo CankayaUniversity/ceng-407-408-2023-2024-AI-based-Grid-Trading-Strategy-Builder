@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class CurrencyDTO {
 
-  private UUID id;
+  private Long id;
   private String name;
   private String symbol;
   private BigDecimal lastPrice;

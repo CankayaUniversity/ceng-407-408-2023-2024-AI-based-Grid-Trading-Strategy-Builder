@@ -4,6 +4,6 @@ import com.gridy.strategybuilder.entity.CandleChart;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CandleChartRepository extends JpaRepository<CandleChart, UUID> {
+public interface CandleChartRepository extends JpaRepository<CandleChart, Long> {
 
 }

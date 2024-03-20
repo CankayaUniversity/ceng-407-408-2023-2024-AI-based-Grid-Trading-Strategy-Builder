@@ -31,9 +31,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class CurrencyPair {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(unique = true, nullable = false)
-  private UUID id;
+  private Long id;
 
   @Column(name = "SYMBOL", unique = true, nullable = false)
   private String symbol;

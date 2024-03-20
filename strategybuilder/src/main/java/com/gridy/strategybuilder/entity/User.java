@@ -32,9 +32,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(unique = true, nullable = false)
-  private UUID id;
+  private Long id;
 
   @Column(name = "USERNAME", unique = true, nullable = false)
   private String username;

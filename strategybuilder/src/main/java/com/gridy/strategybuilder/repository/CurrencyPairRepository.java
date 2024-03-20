@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CurrencyPairRepository extends JpaRepository<CurrencyPair, UUID> {
+public interface CurrencyPairRepository extends JpaRepository<CurrencyPair, Long> {
 
 
   Optional<CurrencyPair> findBySymbol(String symbol);
