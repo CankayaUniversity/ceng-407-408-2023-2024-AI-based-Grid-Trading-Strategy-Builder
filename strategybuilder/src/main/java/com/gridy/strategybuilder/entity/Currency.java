@@ -6,6 +6,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -29,8 +30,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Currency {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(unique = true, nullable = false)
+  @SequenceGenerator(name = "CURRENCY_ID_GENERATOR", sequenceName = "CURRENCY_ID_GEN", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CURRENCY_ID_GENERATOR")
   private Long id;
 
   @Column(name = "NAME", unique = true, nullable = false)

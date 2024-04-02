@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -31,7 +32,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Candle {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @SequenceGenerator(name = "CANDLE_ID_GENERATOR", sequenceName = "CANDLE_ID_GEN", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CANDLE_ID_GENERATOR")
   @Column(unique = true, nullable = false)
   private Long id;
 

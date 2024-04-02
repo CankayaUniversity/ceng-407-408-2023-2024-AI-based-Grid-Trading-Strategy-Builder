@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.UUID;
@@ -32,7 +33,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class User {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @SequenceGenerator(name = "USER_GENERATOR", sequenceName = "USER_ID_GEN", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_GENERATOR")
   @Column(unique = true, nullable = false)
   private Long id;
 
