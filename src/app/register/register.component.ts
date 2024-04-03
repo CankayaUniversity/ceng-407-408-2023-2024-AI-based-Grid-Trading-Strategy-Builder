@@ -9,15 +9,16 @@ import { HttpClient } from '@angular/common/http';
 export class RegisterComponent {
   email!: string;
   password!: string;
+  userName!:string;
 
   constructor(private http: HttpClient) {}
 
   onSubmit() {
     const formData = {
       email: this.email,
-      password: this.password
+      password: this.password,
+      userName:this.userName
     };
-    // Burada form işlemlerini gerçekleştirin, örneğin:
     console.log('Submitted:', formData);
 
     this.http.post<any>('http://localhost:3000/project/test', formData).subscribe({
