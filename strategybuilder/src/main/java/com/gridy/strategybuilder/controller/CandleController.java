@@ -2,9 +2,12 @@ package com.gridy.strategybuilder.controller;
 
 import com.gridy.strategybuilder.dto.CandleDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
+import com.gridy.strategybuilder.dto.filter.CandleFilter;
 import com.gridy.strategybuilder.service.CandleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +32,12 @@ public class CandleController {
   @GetMapping("/findLastByChartId")
   public ResponsePayload<CandleDTO> findLastByChartId(@RequestParam Long chartId){
     return candleService.findLastCandleByChartId(chartId);
+  }
+
+  @PostMapping("/filter")
+  public ResponsePayload<Page<CandleDTO>> filter(@RequestBody CandleFilter candleFilter,
+      Pageable pageable) {
+    return candleService.filter(candleFilter, pageable);
   }
 }
 

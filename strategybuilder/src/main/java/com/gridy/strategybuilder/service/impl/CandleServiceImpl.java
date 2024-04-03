@@ -2,17 +2,24 @@ package com.gridy.strategybuilder.service.impl;
 
 import com.gridy.strategybuilder.dto.CandleChartDTO;
 import com.gridy.strategybuilder.dto.CandleDTO;
+import com.gridy.strategybuilder.dto.CurrencyDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
+import com.gridy.strategybuilder.dto.filter.CandleFilter;
+import com.gridy.strategybuilder.dto.filter.CurrencyFilter;
 import com.gridy.strategybuilder.entity.Candle;
 import com.gridy.strategybuilder.enumeration.ResponseMessageEnum;
 import com.gridy.strategybuilder.mapper.CandleMapper;
 import com.gridy.strategybuilder.repository.CandleRepository;
 import com.gridy.strategybuilder.service.CandleService;
+import com.gridy.strategybuilder.specification.CandleSpec;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,5 +67,13 @@ public class CandleServiceImpl implements CandleService {
             candle
         ))).orElseGet(
         () -> new ResponsePayload<>(ResponseMessageEnum.RECORD_DOES_NOT_EXISTS.getMessage()));
+  }
+
+  @Override
+  public ResponsePayload<Page<CandleDTO>> filter(CandleFilter candleFilter, Pageable pageable) {
+    Specification<Candle> byFilter = CandleSpec.findByFilter(candleFilter);
+
+    return new ResponsePayload<>(
+        candleRepository.findAll(byFilter, pageable).map(candleMapper::convertToDTO));
   }
 }

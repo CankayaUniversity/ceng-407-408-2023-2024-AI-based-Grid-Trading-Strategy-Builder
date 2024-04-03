@@ -20,5 +20,5 @@ public interface CurrencyService {
 
   ResponsePayload<CurrencyDTO> delete(Long id);
 
-  ResponsePayload<List<CurrencyDTO>> filter(CurrencyFilter currencyDTO);
+  ResponsePayload<List<CurrencyDTO>> filter(CurrencyFilter currencyFilter);
 }

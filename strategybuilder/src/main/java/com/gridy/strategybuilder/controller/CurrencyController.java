@@ -56,8 +56,8 @@ public class CurrencyController {
   }
 
   @PostMapping("/filter")
-  public ResponsePayload<List<CurrencyDTO>> filter(@RequestBody CurrencyFilter currencyDTO) {
-    return currencyService.filter(currencyDTO);
+  public ResponsePayload<List<CurrencyDTO>> filter(@RequestBody CurrencyFilter currencyFilter) {
+    return currencyService.filter(currencyFilter);
   }
 
 }

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 
 @Mapper
 public interface CandleMapper extends BaseMapper<Candle, CandleDTO> {
