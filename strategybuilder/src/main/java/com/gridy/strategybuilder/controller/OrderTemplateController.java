@@ -1,10 +1,9 @@
 package com.gridy.strategybuilder.controller;
 
+import com.gridy.strategybuilder.dto.OrderTemplateDTO;
 import com.gridy.strategybuilder.dto.StrategyDTO;
-import com.gridy.strategybuilder.dto.StrategyGenerationParamsDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
-import com.gridy.strategybuilder.service.StrategyGenerationParamsService;
-import com.gridy.strategybuilder.service.StrategyService;
+import com.gridy.strategybuilder.service.OrderTemplateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,16 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("api/v1/strategy")
+@RequestMapping("api/v1/orderTemplate")
 @CrossOrigin(origins = "http://localhost:4200")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class StrategyController {
+public class OrderTemplateController {
 
-  private final StrategyService strategyService;
+  private final OrderTemplateService orderTemplateService;
 
   @PostMapping("/save")
-  public ResponsePayload<StrategyDTO> save(@RequestBody StrategyDTO strategyDTO) {
-    return strategyService.save(strategyDTO);
+  public ResponsePayload<OrderTemplateDTO> save(@RequestBody OrderTemplateDTO orderTemplateDTO) {
+    return orderTemplateService.save(orderTemplateDTO);
   }
 }
 

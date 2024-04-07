@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
@@ -23,7 +24,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "CURRENCY_PAIR")
+@Table(name = "CURRENCY_PAIR", uniqueConstraints = @UniqueConstraint(columnNames = {
+    "BASE_CURRENCY_ID", "QUOTE_CURRENCY_ID"}))
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @AllArgsConstructor
@@ -47,6 +49,12 @@ public class CurrencyPair {
   @ManyToOne
   @JoinColumn(name = "QUOTE_CURRENCY_ID", nullable = false)
   private Currency quoteCurrency;
+
+  @Column(name = "TICK_SIZE", nullable = false)
+  private BigDecimal tickSize;
+
+  @Column(name = "STEP_SIZE", nullable = false)
+  private BigDecimal stepSize;
 
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false)
