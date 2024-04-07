@@ -41,16 +41,16 @@ public class Candle {
   @JoinColumn(name = "CANDLE_CHART_ID", nullable = false)
   private CandleChart candleChart;
 
-  @Column(name = "OPEN_PRICE", nullable = false)
+  @Column(name = "OPEN_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal openPrice;
 
-  @Column(name = "HIGH_PRICE", nullable = false)
+  @Column(name = "HIGH_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal highPrice;
 
-  @Column(name = "LOW_PRICE", nullable = false)
+  @Column(name = "LOW_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal lowPrice;
 
-  @Column(name = "CLOSE_PRICE", nullable = false)
+  @Column(name = "CLOSE_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal closePrice;
 
   @Column(name = "OPEN_TIME", nullable = false, unique = true)

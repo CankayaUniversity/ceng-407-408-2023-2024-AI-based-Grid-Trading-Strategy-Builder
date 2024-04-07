@@ -6,6 +6,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -39,15 +40,15 @@ public class OrderPairTemplate {
   private Long id;
 
   @ManyToOne
-  @Column(name = "STRATEGY_ID", nullable = false)
+  @JoinColumn(name = "STRATEGY_ID", nullable = false)
   private Strategy strategy;
 
   @ManyToOne
-  @Column(name = "BUY_ORDER_TEMPLATE_ID", nullable = false)
+  @JoinColumn(name = "BUY_ORDER_TEMPLATE_ID", nullable = false)
   private OrderTemplate buyOrderTemplate;
 
   @ManyToOne
-  @Column(name = "SELL_ORDER_TEMPLATE_ID", nullable = false)
+  @JoinColumn(name = "SELL_ORDER_TEMPLATE_ID", nullable = false)
   private OrderTemplate sellOrderTemplate;
 
   @CreatedDate

@@ -50,10 +50,10 @@ public class CurrencyPair {
   @JoinColumn(name = "QUOTE_CURRENCY_ID", nullable = false)
   private Currency quoteCurrency;
 
-  @Column(name = "TICK_SIZE", nullable = false)
+  @Column(name = "TICK_SIZE", nullable = false, precision = 19, scale = 8)
   private BigDecimal tickSize;
 
-  @Column(name = "STEP_SIZE", nullable = false)
+  @Column(name = "STEP_SIZE", nullable = false, precision = 19, scale = 8)
   private BigDecimal stepSize;
 
   @CreatedDate

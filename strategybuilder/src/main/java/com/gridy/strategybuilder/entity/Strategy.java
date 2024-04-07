@@ -43,16 +43,16 @@ public class Strategy {
   @JoinColumn(name = "USER_ID", nullable = false)
   private User user;
 
-  @Column(name = "MIN_PRICE", nullable = false)
+  @Column(name = "MIN_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal minPrice;
 
-  @Column(name = "MAX_PRICE", nullable = false)
+  @Column(name = "MAX_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal maxPrice;
 
   @Column(name = "GRIDS", nullable = false)
   private Long grids;
 
-  @Column(name = "INVESTMENT", nullable = false)
+  @Column(name = "INVESTMENT", nullable = false, precision = 19, scale = 8)
   private BigDecimal investment;
 
   @CreatedDate

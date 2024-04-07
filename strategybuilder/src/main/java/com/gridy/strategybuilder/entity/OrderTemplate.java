@@ -32,10 +32,10 @@ public class OrderTemplate {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_TEMPLATE_ID_GENERATOR")
   private Long id;
 
-  @Column(name = "PRICE", nullable = false)
+  @Column(name = "PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal price;
 
-  @Column(name = "QUANTITY", nullable = false)
+  @Column(name = "QUANTITY", nullable = false, precision = 19, scale = 8)
   private BigDecimal quantity;
 
   @CreatedDate

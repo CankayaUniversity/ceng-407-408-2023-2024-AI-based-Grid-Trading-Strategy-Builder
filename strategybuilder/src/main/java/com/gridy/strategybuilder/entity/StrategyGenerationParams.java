@@ -50,10 +50,10 @@ public class StrategyGenerationParams {
   @Enumerated(value = EnumType.STRING)
   private StrategyTimePeriodEnum timePeriod;
 
-  @Column(name = "MIN_PRICE", nullable = false)
+  @Column(name = "MIN_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal minPrice;
 
-  @Column(name = "MAX_PRICE", nullable = false)
+  @Column(name = "MAX_PRICE", nullable = false, precision = 19, scale = 8)
   private BigDecimal maxPrice;
 
   @Column(name = "MIN_GRIDS", nullable = false)
@@ -62,13 +62,13 @@ public class StrategyGenerationParams {
   @Column(name = "MAX_GRIDS", nullable = false)
   private Long maxGrids;
 
-  @Column(name = "MIN_PROFIT_GRIDS", nullable = false)
+  @Column(name = "MIN_PROFIT_GRIDS", nullable = false, precision = 19, scale = 8)
   private BigDecimal minProfitGrids;
 
-  @Column(name = "MAX_PROFIT_GRIDS", nullable = false)
+  @Column(name = "MAX_PROFIT_GRIDS", nullable = false, precision = 19, scale = 8)
   private BigDecimal maxProfitGrids;
 
-  @Column(name = "INVESTMENT", nullable = false)
+  @Column(name = "INVESTMENT", nullable = false, precision = 19, scale = 8)
   private BigDecimal investment;
 
   @CreatedDate

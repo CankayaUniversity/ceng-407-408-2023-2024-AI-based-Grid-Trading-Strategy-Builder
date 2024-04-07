@@ -40,7 +40,7 @@ public class Currency {
   @Column(name = "SYMBOL", unique = true, nullable = false)
   private String symbol;
 
-  @Column(name = "LAST_PRICE")
+  @Column(name = "LAST_PRICE", precision = 19, scale = 8)
   private BigDecimal lastPrice;
 
   @CreatedDate
