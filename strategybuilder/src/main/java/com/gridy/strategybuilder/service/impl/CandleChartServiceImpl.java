@@ -60,24 +60,21 @@ public class CandleChartServiceImpl implements CandleChartService {
     Executors.newSingleThreadExecutor().submit(() -> {
       ResponsePayload<CandleDTO> lastCandleByChartId = candleService.findLastCandleByChartId(
           finalCandleChartDTO.getId());
+
+      if (lastCandleByChartId.getSuccess()) {
+        updateLastCandle(finalCandleChartDTO, lastCandleByChartId.getData());
+      }
+
       long startTime =
           lastCandleByChartId.getSuccess() ? lastCandleByChartId.getData().getCloseTime().getTime()
               : 1000L;
-      while(true){
-        RestTemplate rt = new RestTemplate();
-        URI uri = UriComponentsBuilder.fromHttpUrl("https://api.binance.com/api/v3/klines")
-            .queryParam("startTime", startTime)
-            .queryParam("symbol", finalCandleChartDTO.getCurrencyPair().getSymbol())
-            .queryParam("interval", finalCandleChartDTO.getTimeInterval().getName())
-            .queryParam("limit", 1000)
-            .build().toUri();
-        System.out.println(uri);
-        ResponseEntity<List<List<Object>>> exchange = rt.exchange(
-            new RequestEntity<>(HttpMethod.GET, uri),
-            new ParameterizedTypeReference<>() {
-            });
-        List<List<Object>> response = exchange.getBody();
-        if(response == null) break;
+      System.out.println("start time: " + startTime);
+      while (true) {
+        List<List<Object>> response = fetchFromBinance(finalCandleChartDTO, startTime, 1000);
+        System.out.println(response);
+        if (response == null || response.isEmpty()) {
+          break;
+        }
         for (List<Object> objects : response) {
           ResponsePayload<CandleDTO> candleDTOResponsePayload = candleService.convertFromApiList(
               objects, candleChartDTO);
@@ -91,5 +88,39 @@ public class CandleChartServiceImpl implements CandleChartService {
       }
     });
     return byId;
+  }
+
+  private void updateLastCandle(CandleChartDTO candleChartDTO, CandleDTO lastCandleByChartId) {
+    List<List<Object>> lists = fetchFromBinance(candleChartDTO,
+        lastCandleByChartId.getOpenTime().getTime(), 1);
+
+    if (lists != null && !lists.isEmpty()) {
+      List<Object> objects = lists.get(0);
+      ResponsePayload<CandleDTO> candleDTOResponsePayload = candleService.convertFromApiList(
+          objects, candleChartDTO);
+      if (candleDTOResponsePayload.getSuccess()) {
+        CandleDTO candleDTO = candleDTOResponsePayload.getData();
+        candleDTO.setId(lastCandleByChartId.getId());
+        candleDTO.setCreatedAt(lastCandleByChartId.getCreatedAt());
+        candleService.save(candleDTO);
+      }
+    }
+  }
+
+  private List<List<Object>> fetchFromBinance(CandleChartDTO candleChartDTO, long startTime,
+      long limit) {
+    RestTemplate rt = new RestTemplate();
+    URI uri = UriComponentsBuilder.fromHttpUrl("https://api.binance.com/api/v3/klines")
+        .queryParam("startTime", startTime)
+        .queryParam("symbol", candleChartDTO.getCurrencyPair().getSymbol())
+        .queryParam("interval", candleChartDTO.getTimeInterval().getName())
+        .queryParam("limit", limit)
+        .build().toUri();
+    System.out.println(uri);
+    ResponseEntity<List<List<Object>>> exchange = rt.exchange(
+        new RequestEntity<>(HttpMethod.GET, uri),
+        new ParameterizedTypeReference<>() {
+        });
+    return exchange.getBody();
   }
 }

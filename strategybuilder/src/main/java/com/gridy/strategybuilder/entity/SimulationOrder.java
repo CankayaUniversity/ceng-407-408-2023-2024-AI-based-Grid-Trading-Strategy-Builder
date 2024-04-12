@@ -1,9 +1,13 @@
 package com.gridy.strategybuilder.entity;
 
 import com.gridy.strategybuilder.enumeration.CandleChartTimeIntervalEnum;
+import com.gridy.strategybuilder.enumeration.OrderSideEnum;
+import com.gridy.strategybuilder.enumeration.OrderStatusEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,10 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,42 +25,35 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
-@Table(name = "CANDLE", uniqueConstraints = @UniqueConstraint(columnNames = {
-    "CANDLE_CHART_ID", "OPEN_TIME"}))
+@Table(name = "SIMULATION_ORDER")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Candle {
+public class SimulationOrder {
 
   @Id
-  @SequenceGenerator(name = "CANDLE_ID_GENERATOR", sequenceName = "CANDLE_ID_GEN", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CANDLE_ID_GENERATOR")
+  @SequenceGenerator(name = "SIMULATION_ORDER_ID_GENERATOR", sequenceName = "SIMULATION_ORDER_ID_GEN", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SIMULATION_ORDER_ID_GENERATOR")
   @Column(unique = true, nullable = false)
   private Long id;
 
   @ManyToOne()
-  @JoinColumn(name = "CANDLE_CHART_ID", nullable = false)
-  private CandleChart candleChart;
+  @JoinColumn(name = "SIMULATION_ID", nullable = false)
+  private Simulation simulation;
 
-  @Column(name = "OPEN_PRICE", nullable = false, precision = 19, scale = 8)
-  private BigDecimal openPrice;
+  @ManyToOne()
+  @JoinColumn(name = "ORDER_TEMPLATE_ID", nullable = false)
+  private OrderTemplate orderTemplate;
 
-  @Column(name = "HIGH_PRICE", nullable = false, precision = 19, scale = 8)
-  private BigDecimal highPrice;
+  @Column(name = "STATUS", nullable = false)
+  @Enumerated(value = EnumType.STRING)
+  private OrderStatusEnum status;
 
-  @Column(name = "LOW_PRICE", nullable = false, precision = 19, scale = 8)
-  private BigDecimal lowPrice;
-
-  @Column(name = "CLOSE_PRICE", nullable = false, precision = 19, scale = 8)
-  private BigDecimal closePrice;
-
-  @Column(name = "OPEN_TIME", nullable = false)
-  private Date openTime;
-
-  @Column(name = "CLOSE_TIME", nullable = false)
-  private Date closeTime;
+  @Column(name = "SIDE", nullable = false)
+  @Enumerated(value = EnumType.STRING)
+  private OrderSideEnum side;
 
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false)

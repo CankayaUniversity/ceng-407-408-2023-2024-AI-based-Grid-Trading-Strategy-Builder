@@ -34,4 +34,10 @@ public class OrderPairTemplateServiceImpl implements OrderPairTemplateService {
             orderPairTemplateDTOList.stream().map(orderPairTemplateMapper::convertToEntity).toList())
         .stream().map(orderPairTemplateMapper::convertToDTO).toList());
   }
+
+  @Override
+  public ResponsePayload<List<OrderPairTemplateDTO>> findAllByStrategyId(Long strategyId) {
+    return new ResponsePayload<>(orderPairTemplateRepository.findAllByStrategyId(strategyId)
+        .stream().map(orderPairTemplateMapper::convertToDTO).toList());
+  }
 }
