@@ -1,0 +1,13 @@
+<h2>Geçmiş Stratejiler</h2>
+
+<div *ngIf="strategies.length > 0; else noStrategies">
+  <ul>
+    <li *ngFor="let strategy of strategies">
+      {{ strategy.name }} - {{ strategy.date }}
+    </li>
+  </ul>
+</div>
+
+<ng-template #noStrategies>
+  <p>Henüz hiç strateji bulunmamaktadır.</p>
+</ng-template>

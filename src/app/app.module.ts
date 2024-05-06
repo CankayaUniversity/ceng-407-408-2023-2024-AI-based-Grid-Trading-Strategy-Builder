@@ -10,6 +10,7 @@ import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
 import { PanelComponent } from './panel/panel.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { HistoryStrategiesComponent } from './history-strategies/history-strategies.component';
 
 
 
@@ -19,7 +20,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     RegisterComponent,
     HomeComponent,
     PanelComponent,
-    DashboardComponent
+    DashboardComponent,
+    HistoryStrategiesComponent
   ],
   imports: [
     BrowserModule,
