@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-register',
@@ -11,7 +12,7 @@ export class RegisterComponent {
   password!: string;
   userName!:string;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private location: Location) {}
 
   onSubmit() {
     const formData = {
@@ -29,5 +30,8 @@ export class RegisterComponent {
         console.error('Error:', error);
       }
     });
+  }
+  goBack(): void {
+    this.location.back();
   }
 }

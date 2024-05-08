@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts/highstock';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-panel',
@@ -8,10 +9,13 @@ import * as Highcharts from 'highcharts/highstock';
 })
 export class PanelComponent implements OnInit { 
 
-  constructor() { }
+  constructor(private location: Location) { }
 
   ngOnInit(): void {
     this.generateCandlestickChart();
+  }
+  goBack(): void {
+    this.location.back();
   }
 
   generateCandlestickChart() {

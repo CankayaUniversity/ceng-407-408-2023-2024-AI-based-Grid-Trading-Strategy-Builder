@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-history-strategies',
@@ -12,8 +13,11 @@ export class HistoryStrategiesComponent implements OnInit {
     { name: 'Strateji 3', date: '2024-03-01' }
   ];
 
-  constructor() { }
+  constructor(private location: Location) { }
 
   ngOnInit(): void {
   }
+  goBack(): void {
+    this.location.back();
+}
 }
