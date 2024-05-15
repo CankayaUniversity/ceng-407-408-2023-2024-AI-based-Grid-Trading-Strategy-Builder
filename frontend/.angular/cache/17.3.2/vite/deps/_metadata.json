@@ -1,0 +1,67 @@
+{
+  "hash": "999f003e",
+  "configHash": "a336e284",
+  "lockfileHash": "72bfeef7",
+  "browserHash": "325717b7",
+  "optimized": {
+    "@angular/common/http": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+      "fileHash": "067dc98f",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "c2d5dc6a",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "e0ea74f5",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "3849d743",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "2752c700",
+      "needsInterop": false
+    },
+    "highcharts-angular": {
+      "src": "../../../../../node_modules/highcharts-angular/fesm2022/highcharts-angular.mjs",
+      "file": "highcharts-angular.js",
+      "fileHash": "7f5a2f55",
+      "needsInterop": false
+    },
+    "highcharts/highstock": {
+      "src": "../../../../../node_modules/highcharts/highstock.js",
+      "file": "highcharts_highstock.js",
+      "fileHash": "944dedb0",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-ZKDMGJHZ": {
+      "file": "chunk-ZKDMGJHZ.js"
+    },
+    "chunk-6YX5EJKQ": {
+      "file": "chunk-6YX5EJKQ.js"
+    },
+    "chunk-QG3WSYW4": {
+      "file": "chunk-QG3WSYW4.js"
+    },
+    "chunk-Z7YJ4T6F": {
+      "file": "chunk-Z7YJ4T6F.js"
+    },
+    "chunk-WKYGNSYM": {
+      "file": "chunk-WKYGNSYM.js"
+    }
+  }
+}
