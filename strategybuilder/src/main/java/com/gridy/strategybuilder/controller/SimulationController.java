@@ -6,6 +6,7 @@ import com.gridy.strategybuilder.dto.StrategyDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
 import com.gridy.strategybuilder.service.SimulationService;
 import com.gridy.strategybuilder.service.StrategyService;
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,11 @@ public class SimulationController {
   @PostMapping("/execute")
   public ResponsePayload<SimulationDTO> execute(@RequestParam Long simulationId, @RequestParam Long candleChartId) {
     return simulationService.execute(simulationId, candleChartId);
+  }
+
+  @GetMapping("/getProfit")
+  public ResponsePayload<BigDecimal> getProfit(@RequestParam Long simulationId) {
+    return simulationService.getProfit(simulationId);
   }
 
 }

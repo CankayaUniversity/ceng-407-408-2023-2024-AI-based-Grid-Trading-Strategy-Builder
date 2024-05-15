@@ -94,6 +94,8 @@ public class SimulationServiceImpl implements SimulationService {
       }
       simulationDTO.setStatus(SimulationStatusEnum.READY);
       save(simulationDTO);
+    } else if (simulationDTO.getStatus().equals(SimulationStatusEnum.COMPLETED)) {
+      return new ResponsePayload<>(ResponseMessageEnum.SIMULATION_ALREADY_COMPLETED.getMessage());
     }
 
     PriorityQueue<SimulationOrderDTO> buyOrders = new PriorityQueue<>(
@@ -120,6 +122,8 @@ public class SimulationServiceImpl implements SimulationService {
     if (!candleChartDTOResponsePayload.getSuccess()) {
       return new ResponsePayload<>(candleChartDTOResponsePayload.getMessage());
     }
+    List<SimulationOrderDTO> filledOrders = new ArrayList<>();
+    List<SimulationTransactionDTO> simulationTransactionDTOList = new ArrayList<>();
     while (true) {
       CandleFilter candleFilter = new CandleFilter();
       candleFilter.setCandleChartId(candleChartId);
@@ -134,7 +138,6 @@ public class SimulationServiceImpl implements SimulationService {
       if (data.isEmpty()) {
         break;
       }
-      List<SimulationOrderDTO> filledOrders = new ArrayList<>();
       List<CandleDTO> candleDTOList = data.getContent();
       for (CandleDTO candleDTO : candleDTOList) {
         BigDecimal highPrice = candleDTO.getHighPrice();
@@ -156,21 +159,22 @@ public class SimulationServiceImpl implements SimulationService {
               .side(OrderSideEnum.SELL)
               .build();
 
-          ResponsePayload<SimulationOrderDTO> simulationOrderDTOResponsePayload = simulationOrderService.save(
-              simulationOrderDTO);
-          if (!simulationOrderDTOResponsePayload.getSuccess()) {
-            return new ResponsePayload<>(simulationOrderDTOResponsePayload.getMessage());
-          }
-          SimulationOrderDTO data2 = simulationOrderDTOResponsePayload.getData();
-          sellOrders.add(data2);
+//          ResponsePayload<SimulationOrderDTO> simulationOrderDTOResponsePayload = simulationOrderService.save(
+//              simulationOrderDTO);
+//          if (!simulationOrderDTOResponsePayload.getSuccess()) {
+//            return new ResponsePayload<>(simulationOrderDTOResponsePayload.getMessage());
+//          }
+//          SimulationOrderDTO data2 = simulationOrderDTOResponsePayload.getData();
+          sellOrders.add(simulationOrderDTO);
           poll.setStatus(OrderStatusEnum.FILLED);
-          SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
-              .simulationOrder(poll)
-              .filledPrice(poll.getOrderTemplate().getPrice())
-              .filledAmount(poll.getOrderTemplate().getQuantity())
-              .status(OrderStatusEnum.FILLED)
-              .build();
-          simulationTransactionService.save(simulationTransactionDTO);
+//          SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
+//              .simulationOrder(poll)
+//              .filledPrice(poll.getOrderTemplate().getPrice())
+//              .filledAmount(poll.getOrderTemplate().getQuantity())
+//              .status(OrderStatusEnum.FILLED)
+//              .build();
+//          simulationTransactionDTOList.add(simulationTransactionDTO);
+          //simulationTransactionService.save(simulationTransactionDTO);
           filledOrders.add(poll);
         }
         while (!sellOrders.isEmpty()
@@ -189,29 +193,77 @@ public class SimulationServiceImpl implements SimulationService {
               .side(OrderSideEnum.BUY)
               .build();
 
-          ResponsePayload<SimulationOrderDTO> simulationOrderDTOResponsePayload = simulationOrderService.save(
-              simulationOrderDTO);
-          if (!simulationOrderDTOResponsePayload.getSuccess()) {
-            return new ResponsePayload<>(simulationOrderDTOResponsePayload.getMessage());
-          }
-          SimulationOrderDTO data2 = simulationOrderDTOResponsePayload.getData();
-          buyOrders.add(data2);
+//          ResponsePayload<SimulationOrderDTO> simulationOrderDTOResponsePayload = simulationOrderService.save(
+//              simulationOrderDTO);
+//          if (!simulationOrderDTOResponsePayload.getSuccess()) {
+//            return new ResponsePayload<>(simulationOrderDTOResponsePayload.getMessage());
+//          }
+//          SimulationOrderDTO data2 = simulationOrderDTOResponsePayload.getData();
+          buyOrders.add(simulationOrderDTO);
           poll.setStatus(OrderStatusEnum.FILLED);
-          SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
-              .simulationOrder(poll)
-              .filledPrice(poll.getOrderTemplate().getPrice())
-              .filledAmount(poll.getOrderTemplate().getQuantity())
-              .status(OrderStatusEnum.FILLED)
-              .build();
-          simulationTransactionService.save(simulationTransactionDTO);
+//          SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
+//              .simulationOrder(poll)
+//              .filledPrice(poll.getOrderTemplate().getPrice())
+//              .filledAmount(poll.getOrderTemplate().getQuantity())
+//              .status(OrderStatusEnum.FILLED)
+//              .build();
+//          //simulationTransactionService.save(simulationTransactionDTO);
+//          simulationTransactionDTOList.add(simulationTransactionDTO);
           filledOrders.add(poll);
         }
         simulationDTO.setLastExecutedAt(candleDTO.getCloseTime());
       }
-      save(simulationDTO);
-      simulationOrderService.saveAll(filledOrders);
+      //save(simulationDTO);
+    }
+    simulationDTO.setStatus(SimulationStatusEnum.COMPLETED);
+    save(simulationDTO);
+
+    ResponsePayload<List<SimulationOrderDTO>> listResponsePayload = simulationOrderService.saveAll(
+        filledOrders);
+    for (SimulationOrderDTO order : listResponsePayload.getData()) {
+      SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
+          .simulationOrder(order)
+          .filledPrice(order.getOrderTemplate().getPrice())
+          .filledAmount(order.getOrderTemplate().getQuantity())
+          .status(OrderStatusEnum.FILLED)
+          .build();
+      simulationTransactionDTOList.add(simulationTransactionDTO);
+    }
+    simulationTransactionService.saveAll(simulationTransactionDTOList);
+    simulationOrderService.saveAll(buyOrders.stream().toList());
+    simulationOrderService.saveAll(sellOrders.stream().toList());
+    return new ResponsePayload<>(simulationDTO);
+  }
+
+  @Override
+  public ResponsePayload<BigDecimal> getProfit(Long simulationId) {
+    ResponsePayload<SimulationDTO> byId = findById(simulationId);
+    if (!byId.getSuccess()) {
+      return new ResponsePayload<>(byId.getMessage());
+    }
+    SimulationDTO simulationDTO = byId.getData();
+    if (!simulationDTO.getStatus().equals(SimulationStatusEnum.COMPLETED)) {
+      return new ResponsePayload<>(ResponseMessageEnum.SIMULATION_NOT_COMPLETED.getMessage());
+    }
+    BigDecimal investment = simulationDTO.getStrategy().getInvestment();
+    BigDecimal quantity = BigDecimal.ZERO;
+    List<SimulationTransactionDTO> allBySimulationId = simulationTransactionService.findAllBySimulationId(
+        simulationId).getData();
+    for (SimulationTransactionDTO simulationTransactionDTO : allBySimulationId) {
+      if (simulationTransactionDTO.getSimulationOrder().getSide().equals(OrderSideEnum.BUY)) {
+        quantity = quantity.add(simulationTransactionDTO.getFilledAmount());
+        investment = investment.subtract(
+            simulationTransactionDTO.getFilledAmount()
+                .multiply(simulationTransactionDTO.getFilledPrice()));
+      } else {
+        quantity = quantity.subtract(simulationTransactionDTO.getFilledAmount());
+        investment = investment.add(
+            simulationTransactionDTO.getFilledAmount()
+                .multiply(simulationTransactionDTO.getFilledPrice()));
+      }
     }
 
-    return null;
+    return new ResponsePayload<>(investment.add(quantity.multiply(BigDecimal.valueOf(40000))));
+
   }
 }

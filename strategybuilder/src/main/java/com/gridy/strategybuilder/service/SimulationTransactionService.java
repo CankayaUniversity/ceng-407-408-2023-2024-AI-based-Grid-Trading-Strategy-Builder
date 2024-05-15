@@ -9,4 +9,6 @@ public interface SimulationTransactionService {
   ResponsePayload<SimulationTransactionDTO> save(SimulationTransactionDTO simulationTransactionDTO);
 
   ResponsePayload<List<SimulationTransactionDTO>> saveAll(List<SimulationTransactionDTO> simulationTransactionDTOS);
+
+  ResponsePayload<List<SimulationTransactionDTO>> findAllBySimulationId(Long simulationId);
 }

@@ -35,4 +35,10 @@ public class SimulationTransactionServiceImpl implements SimulationTransactionSe
                 .toList())
         .stream().map(simulationTransactionMapper::convertToDTO).toList());
   }
+
+  @Override
+  public ResponsePayload<List<SimulationTransactionDTO>> findAllBySimulationId(Long simulationId) {
+    return new ResponsePayload<>(simulationTransactionRepository.findAllBySimulationOrder_SimulationId(simulationId)
+        .stream().map(simulationTransactionMapper::convertToDTO).toList());
+  }
 }

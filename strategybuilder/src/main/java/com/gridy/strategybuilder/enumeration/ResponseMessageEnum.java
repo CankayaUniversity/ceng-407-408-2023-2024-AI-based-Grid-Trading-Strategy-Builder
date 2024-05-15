@@ -8,7 +8,9 @@ public enum ResponseMessageEnum {
   UNEXPECTED_ERROR(2L, "An unexpected error was encountered!"),
   EMAIL_EXISTS(3L, "An account with this email already exists."),
   USERNAME_EXISTS(4L, "An account with this username already exists."),
-  RECORD_DOES_NOT_EXISTS(5L, "This record does not exist.");
+  RECORD_DOES_NOT_EXISTS(5L, "This record does not exist."),
+  SIMULATION_NOT_COMPLETED(6L, "Simulation is not completed yet."),
+  SIMULATION_ALREADY_COMPLETED(7L, "Simulation is already completed.");
 
   private final Long code;
   private final String message;

@@ -100,4 +100,10 @@ public class StrategyServiceImpl implements StrategyService {
     }
     return priceList;
   }
+
+  @Override
+  public ResponsePayload<StrategyDTO> findBestStrategy(
+      StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
+    return null;
+  }
 }
