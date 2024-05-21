@@ -1,6 +1,5 @@
 package com.gridy.strategybuilder.entity;
 
-import com.gridy.strategybuilder.enumeration.CandleChartTimeIntervalEnum;
 import com.gridy.strategybuilder.enumeration.OrderSideEnum;
 import com.gridy.strategybuilder.enumeration.OrderStatusEnum;
 import jakarta.persistence.Column;
@@ -58,6 +57,9 @@ public class SimulationOrder {
   @CreatedDate
   @Column(name = "CREATED_AT", nullable = false)
   private Date createdAt;
+
+  @Column(name = "FILLED_AT")
+  private Date filledAt;
 
   @LastModifiedDate
   @Column(name = "UPDATED_AT", nullable = false)

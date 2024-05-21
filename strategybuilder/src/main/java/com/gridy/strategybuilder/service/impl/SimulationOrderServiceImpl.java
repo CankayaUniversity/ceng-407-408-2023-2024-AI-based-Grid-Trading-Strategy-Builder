@@ -51,4 +51,10 @@ public class SimulationOrderServiceImpl implements SimulationOrderService {
                 List.of(OrderStatusEnum.CANCELLED, OrderStatusEnum.FILLED)).stream()
             .map(simulationOrderMapper::convertToDTO).toList());
   }
+
+  @Override
+  public ResponsePayload<List<SimulationOrderDTO>> findAllFilledBySimulationId(Long simulationId) {
+    return new ResponsePayload<>(simulationOrderRepository.findAllBySimulationIdAndStatusOrderByFilledAt(
+            simulationId, OrderStatusEnum.FILLED).stream().map(simulationOrderMapper::convertToDTOWithoutSimulation).toList());
+  }
 }

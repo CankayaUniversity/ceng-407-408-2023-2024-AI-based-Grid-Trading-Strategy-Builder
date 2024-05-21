@@ -159,6 +159,7 @@ public class SimulationServiceImpl implements SimulationService {
               .side(OrderSideEnum.SELL).build();
           sellOrders.add(simulationOrderDTO);
           poll.setStatus(OrderStatusEnum.FILLED);
+          poll.setFilledAt(candleDTO.getOpenTime());
           filledOrders.add(poll);
         }
         while (!sellOrders.isEmpty()
@@ -174,6 +175,7 @@ public class SimulationServiceImpl implements SimulationService {
               .side(OrderSideEnum.BUY).build();
           buyOrders.add(simulationOrderDTO);
           poll.setStatus(OrderStatusEnum.FILLED);
+          poll.setFilledAt(candleDTO.getOpenTime());
           filledOrders.add(poll);
         }
         simulationDTO.setLastExecutedAt(candleDTO.getCloseTime());

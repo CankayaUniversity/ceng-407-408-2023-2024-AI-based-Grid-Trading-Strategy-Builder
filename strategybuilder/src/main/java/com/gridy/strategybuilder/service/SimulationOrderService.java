@@ -16,4 +16,6 @@ public interface SimulationOrderService {
 
   ResponsePayload<List<SimulationOrderDTO>> findBuyOrdersBySimulationIdAndPriceGreaterThan(Long simulationId,
       BigDecimal price);
+
+  ResponsePayload<List<SimulationOrderDTO>> findAllFilledBySimulationId(Long simulationId);
 }

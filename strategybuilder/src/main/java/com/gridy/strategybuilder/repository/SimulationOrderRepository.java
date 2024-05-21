@@ -16,4 +16,6 @@ public interface SimulationOrderRepository extends JpaRepository<SimulationOrder
 
   List<SimulationOrder> findAllBySimulationIdAndSideAndOrderTemplate_PriceGreaterThanAndStatusNotIn(
       Long simulationId, OrderSideEnum side, BigDecimal price, List<OrderStatusEnum> statuses);
+
+  List<SimulationOrder> findAllBySimulationIdAndStatusOrderByFilledAt(Long simulationId, OrderStatusEnum orderStatusEnum);
 }
