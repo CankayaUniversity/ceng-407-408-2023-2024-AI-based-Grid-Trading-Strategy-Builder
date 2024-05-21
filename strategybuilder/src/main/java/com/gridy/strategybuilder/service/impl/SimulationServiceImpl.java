@@ -105,6 +105,9 @@ public class SimulationServiceImpl implements SimulationService {
     PriorityQueue<SimulationOrderDTO> sellOrders = new PriorityQueue<>(
         Comparator.comparing(o -> o.getOrderTemplate().getPrice()));
 
+    List<OrderPairTemplateDTO> allOrderPairTemplates = orderPairTemplateService.findAllByStrategyId(
+        simulationDTO.getStrategy().getId()).getData();
+
     simulationOrderService.findAllBySimulationId(simulationId).getData()
         .forEach(simulationOrderDTO -> {
           if (simulationOrderDTO.getStatus().equals(OrderStatusEnum.FILLED)) {
@@ -146,69 +149,31 @@ public class SimulationServiceImpl implements SimulationService {
         while (!buyOrders.isEmpty()
             && buyOrders.peek().getOrderTemplate().getPrice().compareTo(lowPrice) >= 0) {
           SimulationOrderDTO poll = buyOrders.poll();
-          ResponsePayload<OrderTemplateDTO> counterSellOrderTemplateByBuyOrderTemplateId = orderPairTemplateService.findCounterSellOrderTemplateByBuyOrderTemplateId(
-              poll.getOrderTemplate().getId());
-          if (!counterSellOrderTemplateByBuyOrderTemplateId.getSuccess()) {
-            return new ResponsePayload<>(counterSellOrderTemplateByBuyOrderTemplateId.getMessage());
-          }
-          OrderTemplateDTO data1 = counterSellOrderTemplateByBuyOrderTemplateId.getData();
+          OrderTemplateDTO data1 = allOrderPairTemplates.stream()
+              .filter(orderPairTemplateDTO -> orderPairTemplateDTO.getBuyOrderTemplate().getId()
+                  .equals(poll.getOrderTemplate().getId()))
+              .map(OrderPairTemplateDTO::getSellOrderTemplate)
+              .findFirst().orElse(null);
           SimulationOrderDTO simulationOrderDTO = SimulationOrderDTO.builder()
-              .simulation(simulationDTO)
-              .orderTemplate(data1)
-              .status(OrderStatusEnum.NEW)
-              .side(OrderSideEnum.SELL)
-              .build();
-
-//          ResponsePayload<SimulationOrderDTO> simulationOrderDTOResponsePayload = simulationOrderService.save(
-//              simulationOrderDTO);
-//          if (!simulationOrderDTOResponsePayload.getSuccess()) {
-//            return new ResponsePayload<>(simulationOrderDTOResponsePayload.getMessage());
-//          }
-//          SimulationOrderDTO data2 = simulationOrderDTOResponsePayload.getData();
+              .simulation(simulationDTO).orderTemplate(data1).status(OrderStatusEnum.NEW)
+              .side(OrderSideEnum.SELL).build();
           sellOrders.add(simulationOrderDTO);
           poll.setStatus(OrderStatusEnum.FILLED);
-//          SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
-//              .simulationOrder(poll)
-//              .filledPrice(poll.getOrderTemplate().getPrice())
-//              .filledAmount(poll.getOrderTemplate().getQuantity())
-//              .status(OrderStatusEnum.FILLED)
-//              .build();
-//          simulationTransactionDTOList.add(simulationTransactionDTO);
-          //simulationTransactionService.save(simulationTransactionDTO);
           filledOrders.add(poll);
         }
         while (!sellOrders.isEmpty()
             && sellOrders.peek().getOrderTemplate().getPrice().compareTo(highPrice) <= 0) {
           SimulationOrderDTO poll = sellOrders.poll();
-          ResponsePayload<OrderTemplateDTO> counterBuyOrderTemplateBySellOrderTemplateId = orderPairTemplateService.findCounterBuyOrderTemplateBySellOrderTemplateId(
-              poll.getOrderTemplate().getId());
-          if (!counterBuyOrderTemplateBySellOrderTemplateId.getSuccess()) {
-            return new ResponsePayload<>(counterBuyOrderTemplateBySellOrderTemplateId.getMessage());
-          }
-          OrderTemplateDTO data1 = counterBuyOrderTemplateBySellOrderTemplateId.getData();
+          OrderTemplateDTO data1 = allOrderPairTemplates.stream()
+              .filter(orderPairTemplateDTO -> orderPairTemplateDTO.getSellOrderTemplate().getId()
+                  .equals(poll.getOrderTemplate().getId()))
+              .map(OrderPairTemplateDTO::getBuyOrderTemplate)
+              .findFirst().orElse(null);
           SimulationOrderDTO simulationOrderDTO = SimulationOrderDTO.builder()
-              .simulation(simulationDTO)
-              .orderTemplate(data1)
-              .status(OrderStatusEnum.NEW)
-              .side(OrderSideEnum.BUY)
-              .build();
-
-//          ResponsePayload<SimulationOrderDTO> simulationOrderDTOResponsePayload = simulationOrderService.save(
-//              simulationOrderDTO);
-//          if (!simulationOrderDTOResponsePayload.getSuccess()) {
-//            return new ResponsePayload<>(simulationOrderDTOResponsePayload.getMessage());
-//          }
-//          SimulationOrderDTO data2 = simulationOrderDTOResponsePayload.getData();
+              .simulation(simulationDTO).orderTemplate(data1).status(OrderStatusEnum.NEW)
+              .side(OrderSideEnum.BUY).build();
           buyOrders.add(simulationOrderDTO);
           poll.setStatus(OrderStatusEnum.FILLED);
-//          SimulationTransactionDTO simulationTransactionDTO = SimulationTransactionDTO.builder()
-//              .simulationOrder(poll)
-//              .filledPrice(poll.getOrderTemplate().getPrice())
-//              .filledAmount(poll.getOrderTemplate().getQuantity())
-//              .status(OrderStatusEnum.FILLED)
-//              .build();
-//          //simulationTransactionService.save(simulationTransactionDTO);
-//          simulationTransactionDTOList.add(simulationTransactionDTO);
           filledOrders.add(poll);
         }
         simulationDTO.setLastExecutedAt(candleDTO.getCloseTime());
