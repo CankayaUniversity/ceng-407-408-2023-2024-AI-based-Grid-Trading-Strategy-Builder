@@ -37,4 +37,12 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userMapper.convertToEntity(userDTO)));
     return new ResponsePayload<>(savedDTO);
   }
+
+  @Override
+  public ResponsePayload<UserDTO> findById(Long id) {
+
+    return userRepository.findById(id)
+        .map(user -> new ResponsePayload<>(userMapper.convertToDTO(user)))
+        .orElseGet(() -> new ResponsePayload<>(ResponseMessageEnum.RECORD_DOES_NOT_EXISTS.getMessage()));
+  }
 }

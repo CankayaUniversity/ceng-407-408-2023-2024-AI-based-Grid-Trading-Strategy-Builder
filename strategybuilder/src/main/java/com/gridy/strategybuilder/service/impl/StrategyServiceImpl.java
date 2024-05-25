@@ -4,6 +4,7 @@ import com.gridy.strategybuilder.dto.OrderPairTemplateDTO;
 import com.gridy.strategybuilder.dto.OrderTemplateDTO;
 import com.gridy.strategybuilder.dto.StrategyDTO;
 import com.gridy.strategybuilder.dto.StrategyGenerationParamsDTO;
+import com.gridy.strategybuilder.dto.UserDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
 import com.gridy.strategybuilder.entity.OrderPairTemplate;
 import com.gridy.strategybuilder.entity.OrderTemplate;
@@ -16,6 +17,7 @@ import com.gridy.strategybuilder.service.OrderPairTemplateService;
 import com.gridy.strategybuilder.service.OrderTemplateService;
 import com.gridy.strategybuilder.service.StrategyGenerationParamsService;
 import com.gridy.strategybuilder.service.StrategyService;
+import com.gridy.strategybuilder.service.UserService;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -34,6 +36,7 @@ public class StrategyServiceImpl implements StrategyService {
   private final StrategyRepository strategyRepository;
   private final OrderTemplateService orderTemplateService;
   private final OrderPairTemplateService orderPairTemplateService;
+  private final UserService userService;
 
   @Override
   public ResponsePayload<StrategyDTO> save(
@@ -91,19 +94,46 @@ public class StrategyServiceImpl implements StrategyService {
   private List<BigDecimal> calculateBuyPriceList(BigDecimal maxPrice, BigDecimal minPrice,
       Long grid, BigDecimal tickSize) {
     BigDecimal gridPercentage = BigDecimal.valueOf(
-        Math.pow(maxPrice.divide(minPrice).doubleValue(),
+        Math.pow(maxPrice.divide(minPrice, 10, RoundingMode.HALF_UP).doubleValue(),
             1.0 / grid));
     List<BigDecimal> priceList = new ArrayList<>();
     for (int i = 0; i < grid; i++) {
-      priceList.add(minPrice.multiply(gridPercentage.pow(i)).divide(tickSize)
+      priceList.add(minPrice.multiply(gridPercentage.pow(i)).divide(tickSize, 10, RoundingMode.HALF_UP)
           .setScale(0, RoundingMode.DOWN).multiply(tickSize));
     }
     return priceList;
   }
 
   @Override
-  public ResponsePayload<StrategyDTO> findBestStrategy(
+  public ResponsePayload<StrategyDTO> generateRandomStrategy(
       StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
-    return null;
+
+    StrategyDTO strategyDTO = new StrategyDTO();
+    strategyDTO.setUser(strategyGenerationParamsDTO.getUser());
+    strategyDTO.setStrategyGenerationParams(strategyGenerationParamsDTO);
+    strategyDTO.setMinPrice(strategyGenerationParamsDTO.getMinPrice().add(
+        BigDecimal.valueOf(Math.random()).multiply(
+            strategyGenerationParamsDTO.getMaxPrice().subtract(
+                strategyGenerationParamsDTO.getMinPrice()))));
+    strategyDTO.setMaxPrice(strategyDTO.getMinPrice().add(
+        BigDecimal.valueOf(Math.random()).multiply(
+            strategyGenerationParamsDTO.getMaxPrice().subtract(
+                strategyDTO.getMinPrice()))));
+
+    long maxGridsFromSpread = strategyDTO.getMaxPrice()
+        .divide(strategyDTO.getMinPrice(), MathContext.DECIMAL32)
+        .divide(BigDecimal.valueOf(0.001), MathContext.DECIMAL32).longValue();
+
+    long maxGridsFromInvestment = strategyGenerationParamsDTO.getInvestment()
+        .divide(BigDecimal.valueOf(5), MathContext.DECIMAL32).longValue();
+
+    strategyDTO.setGrids(strategyGenerationParamsDTO.getMinGrids() +
+        (long) (Math.random() * (Math.min(Math.min(maxGridsFromSpread, maxGridsFromInvestment),
+            strategyGenerationParamsDTO.getMaxGrids())
+            - strategyGenerationParamsDTO.getMinGrids())));
+
+    strategyDTO.setInvestment(strategyGenerationParamsDTO.getInvestment());
+
+    return save(strategyDTO);
   }
 }

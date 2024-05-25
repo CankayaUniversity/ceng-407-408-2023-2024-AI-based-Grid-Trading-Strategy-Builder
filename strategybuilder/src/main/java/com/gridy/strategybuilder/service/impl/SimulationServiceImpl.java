@@ -57,6 +57,13 @@ public class SimulationServiceImpl implements SimulationService {
   }
 
   @Override
+  public ResponsePayload<List<SimulationDTO>> saveAll(List<SimulationDTO> simulationDTOList) {
+    return new ResponsePayload<>(simulationRepository.saveAll(
+            simulationDTOList.stream().map(simulationMapper::convertToEntity).toList())
+        .stream().map(simulationMapper::convertToDTO).toList());
+  }
+
+  @Override
   public ResponsePayload<SimulationDTO> findById(Long id) {
     Optional<Simulation> byId = simulationRepository.findById(id);
     return byId.map(simulation -> new ResponsePayload<>(simulationMapper.convertToDTO(simulation)))
@@ -127,6 +134,7 @@ public class SimulationServiceImpl implements SimulationService {
     }
     List<SimulationOrderDTO> filledOrders = new ArrayList<>();
     List<SimulationTransactionDTO> simulationTransactionDTOList = new ArrayList<>();
+    BigDecimal lastPrice = BigDecimal.ZERO;
     while (true) {
       CandleFilter candleFilter = new CandleFilter();
       candleFilter.setCandleChartId(candleChartId);
@@ -180,10 +188,12 @@ public class SimulationServiceImpl implements SimulationService {
         }
         simulationDTO.setLastExecutedAt(candleDTO.getCloseTime());
       }
+      lastPrice = candleDTOList.get(candleDTOList.size() - 1).getClosePrice();
       //save(simulationDTO);
     }
     simulationDTO.setStatus(SimulationStatusEnum.COMPLETED);
     save(simulationDTO);
+
 
     ResponsePayload<List<SimulationOrderDTO>> listResponsePayload = simulationOrderService.saveAll(
         filledOrders);
@@ -199,11 +209,17 @@ public class SimulationServiceImpl implements SimulationService {
     simulationTransactionService.saveAll(simulationTransactionDTOList);
     simulationOrderService.saveAll(buyOrders.stream().toList());
     simulationOrderService.saveAll(sellOrders.stream().toList());
+
+    BigDecimal profitLoss = getProfit(simulationId, lastPrice).getData()
+        .subtract(simulationDTO.getStrategy()
+            .getInvestment());
+    simulationDTO.setProfitLoss(profitLoss);
+    save(simulationDTO);
     return new ResponsePayload<>(simulationDTO);
   }
 
   @Override
-  public ResponsePayload<BigDecimal> getProfit(Long simulationId) {
+  public ResponsePayload<BigDecimal> getProfit(Long simulationId, BigDecimal lastPrice) {
     ResponsePayload<SimulationDTO> byId = findById(simulationId);
     if (!byId.getSuccess()) {
       return new ResponsePayload<>(byId.getMessage());
@@ -230,7 +246,7 @@ public class SimulationServiceImpl implements SimulationService {
       }
     }
 
-    return new ResponsePayload<>(investment.add(quantity.multiply(BigDecimal.valueOf(40000))));
+    return new ResponsePayload<>(investment.add(quantity.multiply(lastPrice)));
 
   }
 }

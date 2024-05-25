@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +45,9 @@ public class Simulation {
   @ManyToOne()
   @JoinColumn(name = "STRATEGY_ID", nullable = false)
   private Strategy strategy;
+
+  @Column(name= "PROFIT_LOSS")
+  private BigDecimal profitLoss;
 
   @Column(name = "STARTING_DATE", nullable = false)
   private Date startingDate;

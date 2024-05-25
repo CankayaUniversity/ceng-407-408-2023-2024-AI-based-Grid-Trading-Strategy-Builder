@@ -90,6 +90,16 @@ public class CandleChartServiceImpl implements CandleChartService {
     return byId;
   }
 
+  @Override
+  public ResponsePayload<CandleChartDTO> findByCurrencyPairId(Long currenyPairID) {
+    Optional<CandleChart> candleChartOptional = candleChartRepository
+        .findFirstByCurrencyPair_Id(currenyPairID);
+    return candleChartOptional.map(
+        candleChart -> new ResponsePayload<>(candleChartMapper.convertToDTO(candleChart)))
+        .orElseGet(
+            () -> new ResponsePayload<>(ResponseMessageEnum.RECORD_DOES_NOT_EXISTS.getMessage()));
+  }
+
   private void updateLastCandle(CandleChartDTO candleChartDTO, CandleDTO lastCandleByChartId) {
     List<List<Object>> lists = fetchFromBinance(candleChartDTO,
         lastCandleByChartId.getOpenTime().getTime(), 1);

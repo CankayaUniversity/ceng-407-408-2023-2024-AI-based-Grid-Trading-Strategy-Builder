@@ -13,5 +13,5 @@ public interface StrategyService {
 
   ResponsePayload<List<OrderPairTemplateDTO>> generateOrderPairTemplates(StrategyDTO strategyDTO);
 
-  ResponsePayload<StrategyDTO> findBestStrategy(StrategyGenerationParamsDTO strategyGenerationParamsDTO);
+  ResponsePayload<StrategyDTO> generateRandomStrategy(StrategyGenerationParamsDTO strategyGenerationParamsDTO);
 }
