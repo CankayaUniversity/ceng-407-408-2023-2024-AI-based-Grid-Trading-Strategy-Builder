@@ -2,6 +2,8 @@ package com.gridy.strategybuilder.service;
 
 import com.gridy.strategybuilder.dto.StrategyGenerationParamsDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
+import java.util.Date;
+import java.util.List;
 
 public interface StrategyGenerationParamsService {
 
@@ -11,4 +13,6 @@ public interface StrategyGenerationParamsService {
   ResponsePayload<StrategyGenerationParamsDTO> findById(Long id);
 
   ResponsePayload<StrategyGenerationParamsDTO> findBestStrategy(Long id);
+
+  ResponsePayload<List<StrategyGenerationParamsDTO>> getStrategiesByDateRange(Date startDate, Date endDate);
 }
