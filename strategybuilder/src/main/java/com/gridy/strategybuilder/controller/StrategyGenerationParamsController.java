@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/strategyGenerationParams")
@@ -32,5 +37,14 @@ public class StrategyGenerationParamsController {
   public ResponsePayload<StrategyGenerationParamsDTO> findBestStrategy(@RequestParam Long id) {
     return strategyGenerationParamsService.findBestStrategy(id);
   }
+
+  @GetMapping("/strategiesByDateRange")
+  public ResponsePayload<List<StrategyGenerationParamsDTO>> getStrategiesByDateRange(
+          @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+          @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+    return strategyGenerationParamsService.getStrategiesByDateRange(startDate, endDate);
+  }
 }
+
+
 
