@@ -35,9 +35,5 @@ public class StrategyController {
     return strategyService.generateOrderPairTemplates(strategyDTO);
   }
 
-  @GetMapping("/findBestStrategy")
-  public ResponsePayload<StrategyDTO> findBestStrategy(@RequestBody StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
-    return strategyService.findBestStrategy(strategyGenerationParamsDTO);
-  }
 }
 

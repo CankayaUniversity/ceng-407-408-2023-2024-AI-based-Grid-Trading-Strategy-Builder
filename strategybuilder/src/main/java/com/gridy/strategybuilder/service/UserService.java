@@ -6,4 +6,5 @@ import com.gridy.strategybuilder.dto.core.ResponsePayload;
 public interface UserService {
 
   ResponsePayload<UserDTO> save(UserDTO userDTO);
+  ResponsePayload<UserDTO> findById(Long id);
 }

@@ -7,7 +7,12 @@ import java.util.List;
 
 public interface StrategyGenerationParamsService {
 
-  ResponsePayload<StrategyGenerationParamsDTO> save(StrategyGenerationParamsDTO strategyGenerationParamsDTO);
+  ResponsePayload<StrategyGenerationParamsDTO> save(
+      StrategyGenerationParamsDTO strategyGenerationParamsDTO);
+
+  ResponsePayload<StrategyGenerationParamsDTO> findById(Long id);
+
+  ResponsePayload<StrategyGenerationParamsDTO> findBestStrategy(Long id);
 
   ResponsePayload<List<StrategyGenerationParamsDTO>> getStrategiesByDateRange(Date startDate, Date endDate);
 }

@@ -39,5 +39,10 @@ public class SimulationOrderController {
     return simulationOrderService.findAllBySimulationId(simulationId);
   }
 
+  @GetMapping("/findAllFilledBySimulationId")
+  public ResponsePayload<List<SimulationOrderDTO>> findAllFilledBySimulationId(@RequestParam Long simulationId) {
+    return simulationOrderService.findAllFilledBySimulationId(simulationId);
+  }
+
 }
 

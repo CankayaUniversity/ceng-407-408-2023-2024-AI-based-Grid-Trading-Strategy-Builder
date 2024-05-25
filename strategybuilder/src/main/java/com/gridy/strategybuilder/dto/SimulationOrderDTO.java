@@ -1,7 +1,5 @@
 package com.gridy.strategybuilder.dto;
 
-import com.gridy.strategybuilder.entity.OrderTemplate;
-import com.gridy.strategybuilder.entity.Simulation;
 import com.gridy.strategybuilder.enumeration.OrderSideEnum;
 import com.gridy.strategybuilder.enumeration.OrderStatusEnum;
 import java.util.Date;
@@ -21,6 +19,7 @@ public class SimulationOrderDTO {
   private OrderTemplateDTO orderTemplate;
   private OrderStatusEnum status;
   private OrderSideEnum side;
+  private Date filledAt;
   private Date createdAt;
   private Date updatedAt;
 }

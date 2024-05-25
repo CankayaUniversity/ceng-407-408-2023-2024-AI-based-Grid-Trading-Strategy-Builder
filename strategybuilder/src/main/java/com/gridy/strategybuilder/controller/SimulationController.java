@@ -37,13 +37,15 @@ public class SimulationController {
   }
 
   @PostMapping("/execute")
-  public ResponsePayload<SimulationDTO> execute(@RequestParam Long simulationId, @RequestParam Long candleChartId) {
+  public ResponsePayload<SimulationDTO> execute(@RequestParam Long simulationId,
+      @RequestParam Long candleChartId) {
     return simulationService.execute(simulationId, candleChartId);
   }
 
   @GetMapping("/getProfit")
-  public ResponsePayload<BigDecimal> getProfit(@RequestParam Long simulationId) {
-    return simulationService.getProfit(simulationId);
+  public ResponsePayload<BigDecimal> getProfit(@RequestParam Long simulationId,
+      @RequestParam BigDecimal lastPrice) {
+    return simulationService.getProfit(simulationId, lastPrice);
   }
 
 }
