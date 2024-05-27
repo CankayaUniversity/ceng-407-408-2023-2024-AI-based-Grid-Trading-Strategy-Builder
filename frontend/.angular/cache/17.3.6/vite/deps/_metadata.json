@@ -1,0 +1,127 @@
+{
+  "hash": "07089bcf",
+  "configHash": "81511910",
+  "lockfileHash": "4d984d20",
+  "browserHash": "8f4feef2",
+  "optimized": {
+    "@angular/common": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/common.mjs",
+      "file": "@angular_common.js",
+      "fileHash": "97d1ce21",
+      "needsInterop": false
+    },
+    "@angular/common/http": {
+      "src": "../../../../../node_modules/@angular/common/fesm2022/http.mjs",
+      "file": "@angular_common_http.js",
+      "fileHash": "e3993c4d",
+      "needsInterop": false
+    },
+    "@angular/core": {
+      "src": "../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "82a5e14d",
+      "needsInterop": false
+    },
+    "@angular/forms": {
+      "src": "../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
+      "file": "@angular_forms.js",
+      "fileHash": "d1f98647",
+      "needsInterop": false
+    },
+    "@angular/material-moment-adapter": {
+      "src": "../../../../../node_modules/@angular/material-moment-adapter/fesm2022/material-moment-adapter.mjs",
+      "file": "@angular_material-moment-adapter.js",
+      "fileHash": "c4bc2e85",
+      "needsInterop": false
+    },
+    "@angular/material/core": {
+      "src": "../../../../../node_modules/@angular/material/fesm2022/core.mjs",
+      "file": "@angular_material_core.js",
+      "fileHash": "9a8a26c5",
+      "needsInterop": false
+    },
+    "@angular/material/datepicker": {
+      "src": "../../../../../node_modules/@angular/material/fesm2022/datepicker.mjs",
+      "file": "@angular_material_datepicker.js",
+      "fileHash": "83cbc0e6",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "c92bfb75",
+      "needsInterop": false
+    },
+    "@angular/platform-browser/animations": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/animations.mjs",
+      "file": "@angular_platform-browser_animations.js",
+      "fileHash": "acac7f7a",
+      "needsInterop": false
+    },
+    "@angular/platform-browser/animations/async": {
+      "src": "../../../../../node_modules/@angular/platform-browser/fesm2022/animations/async.mjs",
+      "file": "@angular_platform-browser_animations_async.js",
+      "fileHash": "717d86fb",
+      "needsInterop": false
+    },
+    "@angular/router": {
+      "src": "../../../../../node_modules/@angular/router/fesm2022/router.mjs",
+      "file": "@angular_router.js",
+      "fileHash": "2d9c9fd2",
+      "needsInterop": false
+    },
+    "highcharts/highstock": {
+      "src": "../../../../../node_modules/highcharts/highstock.js",
+      "file": "highcharts_highstock.js",
+      "fileHash": "e4b999e5",
+      "needsInterop": true
+    },
+    "ng-apexcharts": {
+      "src": "../../../../../node_modules/ng-apexcharts/fesm2020/ng-apexcharts.mjs",
+      "file": "ng-apexcharts.js",
+      "fileHash": "43ffefe9",
+      "needsInterop": false
+    },
+    "rxjs/operators": {
+      "src": "../../../../../node_modules/rxjs/dist/esm5/operators/index.js",
+      "file": "rxjs_operators.js",
+      "fileHash": "651dcb0c",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "browser-3XNAKS7X": {
+      "file": "browser-3XNAKS7X.js"
+    },
+    "chunk-KW56NIU5": {
+      "file": "chunk-KW56NIU5.js"
+    },
+    "chunk-J7QW7NX5": {
+      "file": "chunk-J7QW7NX5.js"
+    },
+    "chunk-4DUSR7SP": {
+      "file": "chunk-4DUSR7SP.js"
+    },
+    "chunk-M4FXWUKP": {
+      "file": "chunk-M4FXWUKP.js"
+    },
+    "chunk-SRCIRUYC": {
+      "file": "chunk-SRCIRUYC.js"
+    },
+    "chunk-KWGYTBU5": {
+      "file": "chunk-KWGYTBU5.js"
+    },
+    "chunk-M6TCVG2N": {
+      "file": "chunk-M6TCVG2N.js"
+    },
+    "chunk-NQBCDTQV": {
+      "file": "chunk-NQBCDTQV.js"
+    },
+    "chunk-57S6QRR4": {
+      "file": "chunk-57S6QRR4.js"
+    },
+    "chunk-PZQZAEDH": {
+      "file": "chunk-PZQZAEDH.js"
+    }
+  }
+}
