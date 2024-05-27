@@ -1,0 +1,36 @@
+.upward-marker::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid 'orange';
+}
+
+.downward-marker::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid 'yellow';
+}
+
+.neutral-marker::before {
+  content: "+";
+  /* Veya boş bırakarak bir daire oluşturabilirsiniz */
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #999999;
+  /* Gri renkte sınır */
+  border-radius: 50%;
+  /* Daire şeklinde oluşturmak için */
+  text-align: center;
+  line-height: 10px;
+  /* İşaretin merkezlenmesi için */
+  color: #999999;
+  /* Gri renkte metin */
+}

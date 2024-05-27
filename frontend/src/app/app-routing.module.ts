@@ -4,19 +4,19 @@ import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { PanelComponent } from './panel/panel.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { MychartComponent } from './mychart/mychart.component';
 import { HistoryStrategiesComponent } from './history-strategies/history-strategies.component';
-
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent },
+  { path: '', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
-  { path:'panel', component:PanelComponent},
-  { path:'dashboard', component:DashboardComponent},
-  { path: 'history-strategies', component:HistoryStrategiesComponent}
+  { path: 'panel', component: PanelComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'mychart', component: MychartComponent },
+  { path: 'history-strategies', component: HistoryStrategiesComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

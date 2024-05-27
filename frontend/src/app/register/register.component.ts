@@ -1,37 +1,33 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Location } from '@angular/common';
+import { User } from '../entity/user';
+import { NotificationService } from '../components/notification.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrl: './register.component.css',
 })
 export class RegisterComponent {
-  email!: string;
-  password!: string;
-  userName!:string;
+  user : User = new User();
+  message !: string;
 
-  constructor(private http: HttpClient, private location: Location) {}
+  constructor(private http: HttpClient,
+    private notificationService: NotificationService) {}
 
   onSubmit() {
-    const formData = {
-      email: this.email,
-      password: this.password,
-      userName:this.userName
-    };
-    console.log('Submitted:', formData);
-
-    this.http.post<any>('http://localhost:3000/project/test', formData).subscribe({
-      next: (response) => {
-        console.log('Response:', response);
-      },
-      error: (error) => {
-        console.error('Error:', error);
-      }
-    });
-  }
-  goBack(): void {
-    this.location.back();
+    console.log('Submitted:', this.user);
+    this.http
+      .post<any>('http://localhost:2626/api/v1/user/save', this.user)
+      .subscribe({
+        next: (response) => {
+          this.message = response.message ? response.message : 'Your registration created was succesful'
+          console.log('Response:', response);
+        },
+        error: (error) => {
+          this.message = error;
+          console.error('Error:', error);
+        },
+      });
   }
 }

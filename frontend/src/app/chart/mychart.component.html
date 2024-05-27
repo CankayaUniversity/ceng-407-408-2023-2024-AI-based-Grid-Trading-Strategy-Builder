@@ -1,0 +1,13 @@
+<!-- src/app/dashboard/dashboard.component.html -->
+<div *ngIf="isBrowser">
+    <apx-chart
+      [series]="chartOptions.series"
+      [chart]="chartOptions.chart"
+      [xaxis]="chartOptions.xaxis"
+      [yaxis]="chartOptions.yaxis"
+      [title]="chartOptions.title"
+      [tooltip]="chartOptions.tooltip"
+      [annotations]="chartOptions.annotations">
+    </apx-chart>
+  </div>
+  
