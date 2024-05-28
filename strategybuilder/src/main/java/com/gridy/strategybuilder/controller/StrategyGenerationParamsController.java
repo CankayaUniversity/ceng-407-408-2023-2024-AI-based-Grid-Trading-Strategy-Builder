@@ -3,10 +3,15 @@ package com.gridy.strategybuilder.controller;
 import com.gridy.strategybuilder.dto.StrategyGenerationParamsDTO;
 import com.gridy.strategybuilder.dto.UserDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
+import com.gridy.strategybuilder.entity.User;
 import com.gridy.strategybuilder.service.StrategyGenerationParamsService;
 import com.gridy.strategybuilder.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +34,10 @@ public class StrategyGenerationParamsController {
   private final StrategyGenerationParamsService strategyGenerationParamsService;
 
   @PostMapping("/save")
-  public ResponsePayload<StrategyGenerationParamsDTO> save(@RequestBody StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
-    return strategyGenerationParamsService.save(strategyGenerationParamsDTO);
+  public ResponsePayload<StrategyGenerationParamsDTO> save(
+      @RequestBody StrategyGenerationParamsDTO strategyGenerationParamsDTO,
+      @AuthenticationPrincipal UserDetails user) {
+    return strategyGenerationParamsService.save(strategyGenerationParamsDTO, user);
   }
 
   @GetMapping("/findBestStrategy")
@@ -40,10 +47,18 @@ public class StrategyGenerationParamsController {
 
   @GetMapping("/strategiesByDateRange")
   public ResponsePayload<List<StrategyGenerationParamsDTO>> getStrategiesByDateRange(
-          @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
-          @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
+      @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
+      @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
     return strategyGenerationParamsService.getStrategiesByDateRange(startDate, endDate);
   }
+
+  @GetMapping("/findMyStrategies")
+  public ResponsePayload<Page<StrategyGenerationParamsDTO>> findMyStrategies(
+      @AuthenticationPrincipal UserDetails user,
+      Pageable pageable) {
+    return strategyGenerationParamsService.findMyStrategies(user, pageable);
+  }
+
 }
 
 
