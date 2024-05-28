@@ -17,6 +17,8 @@ import com.gridy.strategybuilder.service.CandleService;
 import com.gridy.strategybuilder.service.SimulationService;
 import com.gridy.strategybuilder.service.StrategyGenerationParamsService;
 import com.gridy.strategybuilder.service.StrategyService;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,10 +46,11 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
   private final SimulationService simulationService;
 
   @Override
-  public ResponsePayload<StrategyGenerationParamsDTO> save(StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
+  public ResponsePayload<StrategyGenerationParamsDTO> save(
+      StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
     StrategyGenerationParamsDTO savedDTO = strategyGenerationParamsMapper.convertToDTO(
-            strategyGenerationParamsRepository.save(
-                    strategyGenerationParamsMapper.convertToEntity(strategyGenerationParamsDTO)));
+        strategyGenerationParamsRepository.save(
+            strategyGenerationParamsMapper.convertToEntity(strategyGenerationParamsDTO)));
     return new ResponsePayload<>("", true, savedDTO);
   }
 
@@ -75,7 +78,6 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
       strategyService.generateOrderPairTemplates(strategyDTO);
     }
 
-
     Long currenyPairID = strategyGenerationParamsDTO.getCurrencyPair().getId();
 
     CandleChartDTO candleChartDTO = candleChartService.findByCurrencyPairId(currenyPairID)
@@ -91,6 +93,96 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
 
     // create simulation for all strategies
     List<SimulationDTO> simulationDTOList = new ArrayList<>();
+    getSimulaitons(randomStrategies, endingDate, startingDate, simulationDTOList);
+
+    ResponsePayload<List<SimulationDTO>> listResponsePayload = simulationService.saveAll(
+        simulationDTOList);
+    List<SimulationDTO> executedSimulations;
+    List<BigDecimal> lastThreeBestProfitLosses = new ArrayList<>();
+    int generationCount = 0;
+    int maxGenerations = 100; // maximum number of generations
+    BigDecimal improvementThreshold = new BigDecimal(
+        "0.01"); // minimum relative improvement to continue
+
+    loop:
+    while (generationCount < maxGenerations) {
+      executedSimulations = new ArrayList<>();
+      List<Future<SimulationDTO>> futures = new ArrayList<>();
+      for (SimulationDTO simulationDTO : listResponsePayload.getData()) {
+        Future<SimulationDTO> future = Executors.newSingleThreadExecutor()
+            .submit((Callable<SimulationDTO>) () -> simulationService
+                .execute(simulationDTO.getId(), candleChartDTO.getId()).getData());
+        futures.add(future);
+
+        if (futures.size() == 5) {
+          for (Future<SimulationDTO> future1 : futures) {
+            try {
+              executedSimulations.add(future1.get());
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }
+          futures.clear();
+        }
+
+      }
+      for (Future<SimulationDTO> future : futures) {
+        try {
+          executedSimulations.add(future.get());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+      executedSimulations.sort((o1, o2) -> o2.getProfitLoss().compareTo(o1.getProfitLoss()));
+
+      BigDecimal bestProfitLoss = executedSimulations.get(0).getProfitLoss();
+
+      if (lastThreeBestProfitLosses.size() > 10) {
+        // sort last three best profit losses and remove the lowest one
+        lastThreeBestProfitLosses.sort(BigDecimal::compareTo);
+        lastThreeBestProfitLosses.remove(0);
+        BigDecimal lowestProfitLoss = lastThreeBestProfitLosses.stream()
+            .reduce(BigDecimal.valueOf(Long.MAX_VALUE), BigDecimal::min);
+
+        if ((bestProfitLoss.subtract(lowestProfitLoss)).divide(bestProfitLoss,
+                MathContext.DECIMAL32)
+            .compareTo(improvementThreshold) < 0) {
+          break loop; // stop if there is no significant improvement
+        }
+      }
+      lastThreeBestProfitLosses.add(bestProfitLoss);
+
+      // select the top 5 strategies
+      List<StrategyDTO> bestStrategies = executedSimulations.subList(0, 5)
+          .stream()
+          .map(SimulationDTO::getStrategy)
+          .toList();
+
+      // create a new generation by mutating the best strategies
+      randomStrategies = new ArrayList<>();
+      for (StrategyDTO strategy : bestStrategies) {
+        for (int i = 0; i < 4; i++) {
+          StrategyDTO mutatedStrategy = mutateStrategy(strategy);
+          randomStrategies.add(mutatedStrategy);
+        }
+      }
+      for (StrategyDTO strategyDTO : randomStrategies) {
+        strategyService.generateOrderPairTemplates(strategyDTO);
+      }
+
+      // create simulation for all strategies
+      simulationDTOList = new ArrayList<>();
+      getSimulaitons(randomStrategies, endingDate, startingDate, simulationDTOList);
+      listResponsePayload = simulationService.saveAll(simulationDTOList);
+
+      generationCount++;
+    }
+
+    return new ResponsePayload<>(strategyGenerationParamsDTO);
+  }
+
+  private void getSimulaitons(List<StrategyDTO> randomStrategies, Date endingDate,
+      Date startingDate, List<SimulationDTO> simulationDTOList) {
     for (StrategyDTO strategyDTO : randomStrategies) {
       SimulationDTO simulationDTO = new SimulationDTO();
       simulationDTO.setStrategy(strategyDTO);
@@ -100,41 +192,60 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
       simulationDTO.setLastExecutedAt(new Date(0));
       simulationDTOList.add(simulationDTO);
     }
+  }
 
+  private StrategyDTO mutateStrategy(StrategyDTO strategy) {
 
-    ResponsePayload<List<SimulationDTO>> listResponsePayload = simulationService.saveAll(
-        simulationDTOList);
-    List<SimulationDTO> executedSimulations = new ArrayList<>();
+    StrategyDTO mutatedStrategy = new StrategyDTO();
+    mutatedStrategy.setUser(strategy.getUser());
+    mutatedStrategy.setStrategyGenerationParams(strategy.getStrategyGenerationParams());
 
-    List<Future<SimulationDTO>> futures = new ArrayList<>();
-    for (SimulationDTO simulationDTO : listResponsePayload.getData()) {
-      Future<SimulationDTO> future = Executors.newSingleThreadExecutor()
-          .submit((Callable<SimulationDTO>) () -> simulationService
-              .execute(simulationDTO.getId(), candleChartDTO.getId()).getData());
-      futures.add(future);
-
-      if(futures.size() == 5) {
-        for(Future<SimulationDTO> future1 : futures) {
-          try {
-            executedSimulations.add(future1.get());
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }
-        futures.clear();
-      }
-
+    BigDecimal randomMinPrice = strategy.getMinPrice().multiply(
+        BigDecimal.valueOf(1 + randomMutationRate()));
+    if (randomMinPrice.compareTo(strategy.getStrategyGenerationParams().getMinPrice()) < 0) {
+      randomMinPrice = strategy.getStrategyGenerationParams().getMinPrice();
     }
-    for(Future<SimulationDTO> future : futures) {
-      try {
-        executedSimulations.add(future.get());
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    }
-    executedSimulations.sort((o1, o2) -> o2.getProfitLoss().compareTo(o1.getProfitLoss()));
+    mutatedStrategy.setMinPrice(randomMinPrice);
 
-    return new ResponsePayload<>(strategyGenerationParamsDTO);
+    BigDecimal randomMaxPrice = strategy.getMaxPrice().multiply(
+        BigDecimal.valueOf(1 + randomMutationRate()));
+    if (randomMaxPrice.compareTo(strategy.getStrategyGenerationParams().getMaxPrice()) > 0) {
+      randomMaxPrice = strategy.getStrategyGenerationParams().getMaxPrice();
+    }
+    mutatedStrategy.setMaxPrice(randomMaxPrice);
+
+    if (mutatedStrategy.getMinPrice().compareTo(mutatedStrategy.getMaxPrice()) > 0) {
+      BigDecimal temp = mutatedStrategy.getMinPrice();
+      mutatedStrategy.setMinPrice(mutatedStrategy.getMaxPrice());
+      mutatedStrategy.setMaxPrice(temp);
+    }
+
+    long randomGrids = strategy.getGrids() + (long) (Math.random() * 5 - 2);
+
+    long maxGridsFromSpread = (long) (Math.log(mutatedStrategy.getMaxPrice()
+        .divide(mutatedStrategy.getMinPrice(), MathContext.DECIMAL32).doubleValue()) /
+        Math.log(1.001));
+
+    long maxGridsFromInvestment = mutatedStrategy.getStrategyGenerationParams().getInvestment()
+        .divide(BigDecimal.valueOf(5), MathContext.DECIMAL32).longValue();
+
+    randomGrids = Math.min(Math.min(maxGridsFromSpread, maxGridsFromInvestment), randomGrids);
+
+    if (randomGrids < strategy.getStrategyGenerationParams().getMinGrids()) {
+      randomGrids = strategy.getStrategyGenerationParams().getMinGrids();
+    }
+    if (randomGrids > strategy.getStrategyGenerationParams().getMaxGrids()) {
+      randomGrids = strategy.getStrategyGenerationParams().getMaxGrids();
+    }
+    mutatedStrategy.setGrids(randomGrids);
+
+    mutatedStrategy.setInvestment(strategy.getInvestment());
+
+    return strategyService.save(mutatedStrategy).getData();
+  }
+
+  private double randomMutationRate() {
+    return Math.random() * 0.1 - 0.05;
   }
 
   private Date findStartingDate(Date endingDate, StrategyTimePeriodEnum timePeriod) {
@@ -148,11 +259,13 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
   }
 
   @Override
-  public ResponsePayload<List<StrategyGenerationParamsDTO>> getStrategiesByDateRange(Date startDate, Date endDate) {
-    List<StrategyGenerationParams> strategies = strategyGenerationParamsRepository.findByCreatedAtBetween(startDate, endDate);
+  public ResponsePayload<List<StrategyGenerationParamsDTO>> getStrategiesByDateRange(Date startDate,
+      Date endDate) {
+    List<StrategyGenerationParams> strategies = strategyGenerationParamsRepository.findByCreatedAtBetween(
+        startDate, endDate);
     List<StrategyGenerationParamsDTO> strategyDTOs = strategies.stream()
-            .map(strategyGenerationParamsMapper::convertToDTO)
-            .collect(Collectors.toList());
+        .map(strategyGenerationParamsMapper::convertToDTO)
+        .collect(Collectors.toList());
     return new ResponsePayload<>("", true, strategyDTOs);
   }
 }
