@@ -9,22 +9,26 @@ import com.gridy.strategybuilder.dto.SimulationDTO;
 import com.gridy.strategybuilder.dto.SimulationOrderDTO;
 import com.gridy.strategybuilder.dto.SimulationTransactionDTO;
 import com.gridy.strategybuilder.dto.StrategyDTO;
+import com.gridy.strategybuilder.dto.StrategyGenerationParamsDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
 import com.gridy.strategybuilder.dto.filter.CandleFilter;
 import com.gridy.strategybuilder.entity.Simulation;
 import com.gridy.strategybuilder.entity.SimulationOrder;
+import com.gridy.strategybuilder.entity.StrategyGenerationParams;
 import com.gridy.strategybuilder.enumeration.OrderSideEnum;
 import com.gridy.strategybuilder.enumeration.OrderStatusEnum;
 import com.gridy.strategybuilder.enumeration.ResponseMessageEnum;
 import com.gridy.strategybuilder.enumeration.SimulationStatusEnum;
 import com.gridy.strategybuilder.mapper.SimulationMapper;
 import com.gridy.strategybuilder.repository.SimulationRepository;
+import com.gridy.strategybuilder.repository.StrategyGenerationParamsRepository;
 import com.gridy.strategybuilder.service.CandleChartService;
 import com.gridy.strategybuilder.service.CandleService;
 import com.gridy.strategybuilder.service.OrderPairTemplateService;
 import com.gridy.strategybuilder.service.SimulationOrderService;
 import com.gridy.strategybuilder.service.SimulationService;
 import com.gridy.strategybuilder.service.SimulationTransactionService;
+import com.gridy.strategybuilder.service.StrategyGenerationParamsService;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,6 +52,7 @@ public class SimulationServiceImpl implements SimulationService {
   private final CandleChartService candleChartService;
   private final CandleService candleService;
   private final SimulationTransactionService simulationTransactionService;
+  private final StrategyGenerationParamsRepository strategyGenerationParamsRepository;
 
   @Override
   public ResponsePayload<SimulationDTO> save(SimulationDTO simulationDTO) {
@@ -194,7 +199,6 @@ public class SimulationServiceImpl implements SimulationService {
     simulationDTO.setStatus(SimulationStatusEnum.COMPLETED);
     save(simulationDTO);
 
-
     ResponsePayload<List<SimulationOrderDTO>> listResponsePayload = simulationOrderService.saveAll(
         filledOrders);
     for (SimulationOrderDTO order : listResponsePayload.getData()) {
@@ -248,5 +252,23 @@ public class SimulationServiceImpl implements SimulationService {
 
     return new ResponsePayload<>(investment.add(quantity.multiply(lastPrice)));
 
+  }
+
+  @Override
+  public ResponsePayload<SimulationDTO> getMostProfitableStrategyByParamsId(Long id) {
+
+    Optional<StrategyGenerationParams> byId = strategyGenerationParamsRepository.findById(
+        id);
+    if (byId.isEmpty()) {
+      return new ResponsePayload<>(ResponseMessageEnum.RECORD_DOES_NOT_EXISTS.getMessage());
+    }
+    if (!byId.get().getStatus().equals(SimulationStatusEnum.COMPLETED)) {
+      return new ResponsePayload<>(ResponseMessageEnum.SIMULATION_NOT_COMPLETED.getMessage());
+    }
+
+    SimulationDTO mostProfitableSimulation = simulationMapper.convertToDTO(
+        simulationRepository.findByStrategyGenerationParams(id).orElse(null));
+
+    return new ResponsePayload<>(mostProfitableSimulation);
   }
 }

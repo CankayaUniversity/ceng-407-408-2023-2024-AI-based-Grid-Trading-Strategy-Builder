@@ -45,4 +45,11 @@ public class UserServiceImpl implements UserService {
         .map(user -> new ResponsePayload<>(userMapper.convertToDTO(user)))
         .orElseGet(() -> new ResponsePayload<>(ResponseMessageEnum.RECORD_DOES_NOT_EXISTS.getMessage()));
   }
+
+  @Override
+  public ResponsePayload<UserDTO> findByEmail(String email) {
+    return userRepository.findByEmail(email)
+        .map(user -> new ResponsePayload<>(userMapper.convertToDTO(user)))
+        .orElseGet(() -> new ResponsePayload<>(ResponseMessageEnum.RECORD_DOES_NOT_EXISTS.getMessage()));
+  }
 }

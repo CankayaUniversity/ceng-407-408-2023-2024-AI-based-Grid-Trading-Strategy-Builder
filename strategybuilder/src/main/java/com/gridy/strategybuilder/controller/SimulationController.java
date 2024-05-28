@@ -48,5 +48,10 @@ public class SimulationController {
     return simulationService.getProfit(simulationId, lastPrice);
   }
 
+  @GetMapping("/mostProfitable")
+  public ResponsePayload<SimulationDTO> getMostProfitableStrategyByParamsId(@RequestParam Long id) {
+    return simulationService.getMostProfitableStrategyByParamsId(id);
+  }
+
 }
 
