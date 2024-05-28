@@ -98,8 +98,9 @@ public class StrategyServiceImpl implements StrategyService {
             1.0 / grid));
     List<BigDecimal> priceList = new ArrayList<>();
     for (int i = 0; i < grid; i++) {
-      priceList.add(minPrice.multiply(gridPercentage.pow(i)).divide(tickSize, 10, RoundingMode.HALF_UP)
-          .setScale(0, RoundingMode.DOWN).multiply(tickSize));
+      priceList.add(
+          minPrice.multiply(gridPercentage.pow(i)).divide(tickSize, 10, RoundingMode.HALF_UP)
+              .setScale(0, RoundingMode.DOWN).multiply(tickSize));
     }
     return priceList;
   }
@@ -107,7 +108,11 @@ public class StrategyServiceImpl implements StrategyService {
   @Override
   public ResponsePayload<StrategyDTO> generateRandomStrategy(
       StrategyGenerationParamsDTO strategyGenerationParamsDTO) {
+    return generateRandomStrategy(strategyGenerationParamsDTO, 0);
+  }
 
+  public ResponsePayload<StrategyDTO> generateRandomStrategy(
+      StrategyGenerationParamsDTO strategyGenerationParamsDTO, int tryCount) {
     StrategyDTO strategyDTO = new StrategyDTO();
     strategyDTO.setUser(strategyGenerationParamsDTO.getUser());
     strategyDTO.setStrategyGenerationParams(strategyGenerationParamsDTO);
@@ -120,16 +125,25 @@ public class StrategyServiceImpl implements StrategyService {
             strategyGenerationParamsDTO.getMaxPrice().subtract(
                 strategyDTO.getMinPrice()))));
 
-    long maxGridsFromSpread = strategyDTO.getMaxPrice()
-        .divide(strategyDTO.getMinPrice(), MathContext.DECIMAL32)
-        .divide(BigDecimal.valueOf(0.001), MathContext.DECIMAL32).longValue();
+    long maxGridsFromSpread = (long) (Math.log(strategyDTO.getMaxPrice()
+        .divide(strategyDTO.getMinPrice(), MathContext.DECIMAL32).doubleValue()) /
+        Math.log(1.001));
 
     long maxGridsFromInvestment = strategyGenerationParamsDTO.getInvestment()
         .divide(BigDecimal.valueOf(5), MathContext.DECIMAL32).longValue();
 
-    strategyDTO.setGrids(strategyGenerationParamsDTO.getMinGrids() +
-        (long) (Math.random() * (Math.min(Math.min(maxGridsFromSpread, maxGridsFromInvestment),
-            strategyGenerationParamsDTO.getMaxGrids())
+    long maxGrids = Math.min(Math.min(maxGridsFromSpread, maxGridsFromInvestment),
+        strategyGenerationParamsDTO.getMaxGrids());
+
+    if (maxGrids < strategyGenerationParamsDTO.getMinGrids()) {
+      if (tryCount > 10) {
+        return null;
+      }
+      return generateRandomStrategy(strategyGenerationParamsDTO, tryCount + 1);
+    }
+
+    strategyDTO.setGrids(
+        strategyGenerationParamsDTO.getMinGrids() + (long) (Math.random() * (maxGrids
             - strategyGenerationParamsDTO.getMinGrids())));
 
     strategyDTO.setInvestment(strategyGenerationParamsDTO.getInvestment());
