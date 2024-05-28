@@ -5,18 +5,21 @@ import com.gridy.strategybuilder.dto.CandleDTO;
 import com.gridy.strategybuilder.dto.SimulationDTO;
 import com.gridy.strategybuilder.dto.StrategyDTO;
 import com.gridy.strategybuilder.dto.StrategyGenerationParamsDTO;
+import com.gridy.strategybuilder.dto.UserDTO;
 import com.gridy.strategybuilder.dto.core.ResponsePayload;
+import com.gridy.strategybuilder.entity.User;
 import com.gridy.strategybuilder.enumeration.SimulationStatusEnum;
 import com.gridy.strategybuilder.enumeration.StrategyTimePeriodEnum;
-import com.gridy.strategybuilder.enumeration.ResponseMessageEnum;
 import com.gridy.strategybuilder.entity.StrategyGenerationParams;
 import com.gridy.strategybuilder.mapper.StrategyGenerationParamsMapper;
+import com.gridy.strategybuilder.mapper.UserMapper;
 import com.gridy.strategybuilder.repository.StrategyGenerationParamsRepository;
 import com.gridy.strategybuilder.service.CandleChartService;
 import com.gridy.strategybuilder.service.CandleService;
 import com.gridy.strategybuilder.service.SimulationService;
 import com.gridy.strategybuilder.service.StrategyGenerationParamsService;
 import com.gridy.strategybuilder.service.StrategyService;
+import com.gridy.strategybuilder.service.UserService;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -28,11 +31,10 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -44,6 +46,20 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
   private final CandleChartService candleChartService;
   private final CandleService candleService;
   private final SimulationService simulationService;
+  private final UserService userService;
+
+  @Override
+  public ResponsePayload<StrategyGenerationParamsDTO> save(
+      StrategyGenerationParamsDTO strategyGenerationParamsDTO, UserDetails user) {
+    String username = user.getUsername();
+    ResponsePayload<UserDTO> byEmail = userService.findByEmail(username);
+
+    strategyGenerationParamsDTO.setUser(byEmail.getData());
+    StrategyGenerationParamsDTO savedDTO = strategyGenerationParamsMapper.convertToDTO(
+        strategyGenerationParamsRepository.save(
+            strategyGenerationParamsMapper.convertToEntity(strategyGenerationParamsDTO)));
+    return new ResponsePayload<>("", true, savedDTO);
+  }
 
   @Override
   public ResponsePayload<StrategyGenerationParamsDTO> save(
@@ -67,6 +83,11 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
   public ResponsePayload<StrategyGenerationParamsDTO> findBestStrategy(Long id) {
 
     StrategyGenerationParamsDTO strategyGenerationParamsDTO = findById(id).getData();
+    if (!strategyGenerationParamsDTO.getStatus().equals(SimulationStatusEnum.NEW)) {
+      return new ResponsePayload<>(strategyGenerationParamsDTO);
+    }
+    strategyGenerationParamsDTO.setStatus(SimulationStatusEnum.STARTED);
+    save(strategyGenerationParamsDTO);
     int populationSize = 20;
     List<StrategyDTO> randomStrategies = new ArrayList<>();
     for (int i = 0; i < populationSize; i++) {
@@ -178,6 +199,8 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
       generationCount++;
     }
 
+    strategyGenerationParamsDTO.setStatus(SimulationStatusEnum.COMPLETED);
+    save(strategyGenerationParamsDTO);
     return new ResponsePayload<>(strategyGenerationParamsDTO);
   }
 
@@ -267,6 +290,19 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
         .map(strategyGenerationParamsMapper::convertToDTO)
         .collect(Collectors.toList());
     return new ResponsePayload<>("", true, strategyDTOs);
+  }
+
+  @Override
+  public ResponsePayload<Page<StrategyGenerationParamsDTO>> findMyStrategies(UserDetails user,
+      Pageable pageable) {
+
+    String username = user.getUsername();
+    ResponsePayload<UserDTO> byEmail = userService.findByEmail(username);
+    Page<StrategyGenerationParams> strategies = strategyGenerationParamsRepository
+        .findByUserId(byEmail.getData().getId(), pageable);
+    Page<StrategyGenerationParamsDTO> strategyDTOs = strategies.map(
+        strategyGenerationParamsMapper::convertToDTO);
+    return new ResponsePayload<>(strategyDTOs);
   }
 }
 

@@ -1,6 +1,8 @@
 package com.gridy.strategybuilder.entity;
 
+import com.gridy.strategybuilder.enumeration.SimulationStatusEnum;
 import com.gridy.strategybuilder.enumeration.StrategyTimePeriodEnum;
+import com.gridy.strategybuilder.enumeration.UserRoleEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -11,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -46,6 +49,10 @@ public class StrategyGenerationParams {
   @JoinColumn(name = "CURRENCY_PAIR_ID", nullable = false)
   private CurrencyPair currencyPair;
 
+  @Column(name = "STATUS", nullable = false)
+  @Enumerated(value = EnumType.STRING)
+  private SimulationStatusEnum status;
+
   @Column(name = "TIME_PERIOD", nullable = false)
   @Enumerated(value = EnumType.STRING)
   private StrategyTimePeriodEnum timePeriod;
@@ -78,4 +85,11 @@ public class StrategyGenerationParams {
   @LastModifiedDate
   @Column(name = "UPDATED_AT", nullable = false)
   private Date updatedAt;
+
+  @PrePersist
+  protected void onCreate() {
+    if (this.status == null) {
+      this.status = SimulationStatusEnum.NEW;
+    }
+  }
 }
