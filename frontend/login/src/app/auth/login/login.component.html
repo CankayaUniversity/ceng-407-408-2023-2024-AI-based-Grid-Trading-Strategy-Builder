@@ -1,0 +1,16 @@
+<!-- src/app/auth/login/login.component.html -->
+<div class="wrapper">
+  <div class="title">
+    <h1>GRIDY</h1>
+    <p>Welcome to Gridy to manage your crypto controls with your personal accounts and monitor your investments.</p>
+  </div>
+  <div class="login-container">
+    <h2>If you already have an account</h2>
+    <form (ngSubmit)="onSubmit()">
+      <input type="email" [(ngModel)]="user.email" name="email" placeholder="E-mail/Username" required>
+      <input type="password" [(ngModel)]="user.password" name="password" placeholder="********" required>
+      <button type="submit">LOGIN</button>
+    </form>
+    <button type="button">REGISTER NOW</button>
+  </div>
+</div>
