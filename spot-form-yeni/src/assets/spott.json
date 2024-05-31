@@ -1,0 +1,47 @@
+{
+  "id": 123456789,
+  "user": {
+    "id": 987654321,
+    "username": "exampleUser",
+    "email": "user@example.com",
+    "password": "examplePassword",
+    "role": "USER",
+    "isEmailVerified": true,
+    "createdAt": "2023-05-01T10:00:00Z",
+    "updatedAt": "2023-05-10T12:00:00Z"
+  },
+  "currencyPair": {
+    "id": 123,
+    "symbol": "BTC/USD",
+    "baseCurrency": {
+      "id": 1,
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "lastPrice": 29000.00,
+      "createdAt": "2023-01-01T10:00:00Z",
+      "updatedAt": "2023-01-10T12:00:00Z"
+    },
+    "quoteCurrency": {
+      "id": 2,
+      "name": "US Dollar",
+      "symbol": "USD",
+      "lastPrice": 1.00,
+      "createdAt": "2023-01-01T10:00:00Z",
+      "updatedAt": "2023-01-10T12:00:00Z"
+    },
+    "tickSize": 0.01,
+    "stepSize": 0.0001,
+    "createdAt": "2023-01-01T10:00:00Z",
+    "updatedAt": "2023-01-10T12:00:00Z"
+  },
+  "timePeriod": "ONE_MONTH",
+  "minPrice": 30000.00,
+  "maxPrice": 35000.00,
+  "minGrids": 5,
+  "maxGrids": 10,
+  "minProfitGrids": 0.01,
+  "maxProfitGrids": 0.02,
+  "investment": 1000.00,
+  "createdAt": "2024-05-01T10:00:00Z",
+  "updatedAt": "2024-05-10T12:00:00Z"
+}
