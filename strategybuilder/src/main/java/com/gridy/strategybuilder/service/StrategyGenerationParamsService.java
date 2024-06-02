@@ -26,4 +26,6 @@ public interface StrategyGenerationParamsService {
 
   ResponsePayload<Page<StrategyGenerationParamsDTO>> findMyStrategies(UserDetails user,
       Pageable pageable);
+
+  ResponsePayload<Boolean> delete(Long id);
 }

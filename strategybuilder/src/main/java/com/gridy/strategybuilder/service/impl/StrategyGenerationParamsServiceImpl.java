@@ -81,126 +81,129 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
 
   @Override
   public ResponsePayload<StrategyGenerationParamsDTO> findBestStrategy(Long id) {
-
     StrategyGenerationParamsDTO strategyGenerationParamsDTO = findById(id).getData();
     if (!strategyGenerationParamsDTO.getStatus().equals(SimulationStatusEnum.NEW)) {
       return new ResponsePayload<>(strategyGenerationParamsDTO);
     }
-    strategyGenerationParamsDTO.setStatus(SimulationStatusEnum.STARTED);
-    save(strategyGenerationParamsDTO);
-    int populationSize = 20;
-    List<StrategyDTO> randomStrategies = new ArrayList<>();
-    for (int i = 0; i < populationSize; i++) {
-      randomStrategies.add(
-          strategyService.generateRandomStrategy(strategyGenerationParamsDTO).getData());
-    }
 
-    for (StrategyDTO strategyDTO : randomStrategies) {
-      strategyService.generateOrderPairTemplates(strategyDTO);
-    }
-
-    Long currenyPairID = strategyGenerationParamsDTO.getCurrencyPair().getId();
-
-    CandleChartDTO candleChartDTO = candleChartService.findByCurrencyPairId(currenyPairID)
-        .getData();
-
-    ResponsePayload<CandleDTO> lastCandleByChartId = candleService.findLastCandleByChartId(
-        candleChartDTO.getId());
-
-    Date endingDate = lastCandleByChartId.getData().getOpenTime();
-    StrategyTimePeriodEnum timePeriod = strategyGenerationParamsDTO.getTimePeriod();
-
-    Date startingDate = findStartingDate(endingDate, timePeriod);
-
-    // create simulation for all strategies
-    List<SimulationDTO> simulationDTOList = new ArrayList<>();
-    getSimulaitons(randomStrategies, endingDate, startingDate, simulationDTOList);
-
-    ResponsePayload<List<SimulationDTO>> listResponsePayload = simulationService.saveAll(
-        simulationDTOList);
-    List<SimulationDTO> executedSimulations;
-    List<BigDecimal> lastThreeBestProfitLosses = new ArrayList<>();
-    int generationCount = 0;
-    int maxGenerations = 100; // maximum number of generations
-    BigDecimal improvementThreshold = new BigDecimal(
-        "0.01"); // minimum relative improvement to continue
-
-    loop:
-    while (generationCount < maxGenerations) {
-      executedSimulations = new ArrayList<>();
-      List<Future<SimulationDTO>> futures = new ArrayList<>();
-      for (SimulationDTO simulationDTO : listResponsePayload.getData()) {
-        Future<SimulationDTO> future = Executors.newSingleThreadExecutor()
-            .submit((Callable<SimulationDTO>) () -> simulationService
-                .execute(simulationDTO.getId(), candleChartDTO.getId()).getData());
-        futures.add(future);
-
-        if (futures.size() == 5) {
-          for (Future<SimulationDTO> future1 : futures) {
-            try {
-              executedSimulations.add(future1.get());
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
-          }
-          futures.clear();
-        }
-
+    Executors.newSingleThreadExecutor().submit(() -> {
+      strategyGenerationParamsDTO.setStatus(SimulationStatusEnum.STARTED);
+      save(strategyGenerationParamsDTO);
+      int populationSize = 20;
+      List<StrategyDTO> randomStrategies = new ArrayList<>();
+      for (int i = 0; i < populationSize; i++) {
+        randomStrategies.add(
+            strategyService.generateRandomStrategy(strategyGenerationParamsDTO).getData());
       }
-      for (Future<SimulationDTO> future : futures) {
-        try {
-          executedSimulations.add(future.get());
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-      executedSimulations.sort((o1, o2) -> o2.getProfitLoss().compareTo(o1.getProfitLoss()));
 
-      BigDecimal bestProfitLoss = executedSimulations.get(0).getProfitLoss();
-
-      if (lastThreeBestProfitLosses.size() > 10) {
-        // sort last three best profit losses and remove the lowest one
-        lastThreeBestProfitLosses.sort(BigDecimal::compareTo);
-        lastThreeBestProfitLosses.remove(0);
-        BigDecimal lowestProfitLoss = lastThreeBestProfitLosses.stream()
-            .reduce(BigDecimal.valueOf(Long.MAX_VALUE), BigDecimal::min);
-
-        if ((bestProfitLoss.subtract(lowestProfitLoss)).divide(bestProfitLoss,
-                MathContext.DECIMAL32)
-            .compareTo(improvementThreshold) < 0) {
-          break loop; // stop if there is no significant improvement
-        }
-      }
-      lastThreeBestProfitLosses.add(bestProfitLoss);
-
-      // select the top 5 strategies
-      List<StrategyDTO> bestStrategies = executedSimulations.subList(0, 5)
-          .stream()
-          .map(SimulationDTO::getStrategy)
-          .toList();
-
-      // create a new generation by mutating the best strategies
-      randomStrategies = new ArrayList<>();
-      for (StrategyDTO strategy : bestStrategies) {
-        for (int i = 0; i < 4; i++) {
-          StrategyDTO mutatedStrategy = mutateStrategy(strategy);
-          randomStrategies.add(mutatedStrategy);
-        }
-      }
       for (StrategyDTO strategyDTO : randomStrategies) {
         strategyService.generateOrderPairTemplates(strategyDTO);
       }
 
+      Long currenyPairID = strategyGenerationParamsDTO.getCurrencyPair().getId();
+
+      CandleChartDTO candleChartDTO = candleChartService.findByCurrencyPairId(currenyPairID)
+          .getData();
+
+      ResponsePayload<CandleDTO> lastCandleByChartId = candleService.findLastCandleByChartId(
+          candleChartDTO.getId());
+
+      Date endingDate = lastCandleByChartId.getData().getOpenTime();
+      StrategyTimePeriodEnum timePeriod = strategyGenerationParamsDTO.getTimePeriod();
+
+      Date startingDate = findStartingDate(endingDate, timePeriod);
+
       // create simulation for all strategies
-      simulationDTOList = new ArrayList<>();
+      List<SimulationDTO> simulationDTOList = new ArrayList<>();
       getSimulaitons(randomStrategies, endingDate, startingDate, simulationDTOList);
-      listResponsePayload = simulationService.saveAll(simulationDTOList);
 
-      generationCount++;
-    }
+      ResponsePayload<List<SimulationDTO>> listResponsePayload = simulationService.saveAll(
+          simulationDTOList);
+      List<SimulationDTO> executedSimulations;
+      List<BigDecimal> lastThreeBestProfitLosses = new ArrayList<>();
+      int generationCount = 0;
+      int maxGenerations = 100; // maximum number of generations
+      BigDecimal improvementThreshold = new BigDecimal(
+          "0.01"); // minimum relative improvement to continue
 
-    strategyGenerationParamsDTO.setStatus(SimulationStatusEnum.COMPLETED);
-    save(strategyGenerationParamsDTO);
+      loop:
+      while (generationCount < maxGenerations) {
+        executedSimulations = new ArrayList<>();
+        List<Future<SimulationDTO>> futures = new ArrayList<>();
+        for (SimulationDTO simulationDTO : listResponsePayload.getData()) {
+          Future<SimulationDTO> future = Executors.newSingleThreadExecutor()
+              .submit((Callable<SimulationDTO>) () -> simulationService
+                  .execute(simulationDTO.getId(), candleChartDTO.getId()).getData());
+          futures.add(future);
+
+          if (futures.size() == 5) {
+            for (Future<SimulationDTO> future1 : futures) {
+              try {
+                executedSimulations.add(future1.get());
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+            futures.clear();
+          }
+
+        }
+        for (Future<SimulationDTO> future : futures) {
+          try {
+            executedSimulations.add(future.get());
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+        executedSimulations.sort((o1, o2) -> o2.getProfitLoss().compareTo(o1.getProfitLoss()));
+
+        BigDecimal bestProfitLoss = executedSimulations.get(0).getProfitLoss();
+
+        if (lastThreeBestProfitLosses.size() > 10) {
+          // sort last three best profit losses and remove the lowest one
+          lastThreeBestProfitLosses.sort(BigDecimal::compareTo);
+          lastThreeBestProfitLosses.remove(0);
+          BigDecimal lowestProfitLoss = lastThreeBestProfitLosses.stream()
+              .reduce(BigDecimal.valueOf(Long.MAX_VALUE), BigDecimal::min);
+
+          if ((bestProfitLoss.subtract(lowestProfitLoss)).divide(bestProfitLoss,
+                  MathContext.DECIMAL32)
+              .compareTo(improvementThreshold) < 0) {
+            break loop; // stop if there is no significant improvement
+          }
+        }
+        lastThreeBestProfitLosses.add(bestProfitLoss);
+
+        // select the top 5 strategies
+        List<StrategyDTO> bestStrategies = executedSimulations.subList(0, 5)
+            .stream()
+            .map(SimulationDTO::getStrategy)
+            .toList();
+
+        // create a new generation by mutating the best strategies
+        randomStrategies = new ArrayList<>();
+        for (StrategyDTO strategy : bestStrategies) {
+          for (int i = 0; i < 4; i++) {
+            StrategyDTO mutatedStrategy = mutateStrategy(strategy);
+            randomStrategies.add(mutatedStrategy);
+          }
+        }
+        for (StrategyDTO strategyDTO : randomStrategies) {
+          strategyService.generateOrderPairTemplates(strategyDTO);
+        }
+
+        // create simulation for all strategies
+        simulationDTOList = new ArrayList<>();
+        getSimulaitons(randomStrategies, endingDate, startingDate, simulationDTOList);
+        listResponsePayload = simulationService.saveAll(simulationDTOList);
+
+        generationCount++;
+      }
+
+      strategyGenerationParamsDTO.setStatus(SimulationStatusEnum.COMPLETED);
+      save(strategyGenerationParamsDTO);
+    });
+
     return new ResponsePayload<>(strategyGenerationParamsDTO);
   }
 
@@ -303,6 +306,12 @@ public class StrategyGenerationParamsServiceImpl implements StrategyGenerationPa
     Page<StrategyGenerationParamsDTO> strategyDTOs = strategies.map(
         strategyGenerationParamsMapper::convertToDTO);
     return new ResponsePayload<>(strategyDTOs);
+  }
+
+  @Override
+  public ResponsePayload<Boolean> delete(Long id) {
+    strategyGenerationParamsRepository.deleteById(id);
+    return new ResponsePayload<>("", true, true);
   }
 }
 

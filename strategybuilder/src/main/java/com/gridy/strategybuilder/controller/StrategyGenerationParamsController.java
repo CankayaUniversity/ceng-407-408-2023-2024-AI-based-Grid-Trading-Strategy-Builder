@@ -59,6 +59,11 @@ public class StrategyGenerationParamsController {
     return strategyGenerationParamsService.findMyStrategies(user, pageable);
   }
 
+  @DeleteMapping("/delete")
+  public ResponsePayload<Boolean> delete(@RequestParam Long id) {
+    return strategyGenerationParamsService.delete(id);
+  }
+
 }
 
 
