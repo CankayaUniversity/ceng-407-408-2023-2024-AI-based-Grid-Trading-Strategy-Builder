@@ -1,4 +1,13 @@
 import {
+  ControlContainer,
+  FormGroupDirective,
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  NgControl,
+  NgForm,
+  Validators
+} from "./chunk-J7QW7NX5.js";
+import {
   A11yModule,
   BACKSPACE,
   BidiModule,
@@ -42,15 +51,6 @@ import {
   normalizePassiveListenerOptions,
   supportsScrollBehavior
 } from "./chunk-KW56NIU5.js";
-import {
-  ControlContainer,
-  FormGroupDirective,
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
-  NgControl,
-  NgForm,
-  Validators
-} from "./chunk-J7QW7NX5.js";
 import {
   animate,
   keyframes,

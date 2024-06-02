@@ -1,5 +1,82 @@
+<h1>Simulation Data</h1>
+
+<div class="container text-center">
+  <div class="row">
+    <div class="col">
+      <h2>Max Price</h2>
+    </div>
+    <div class="col">
+      <h2>Min Price</h2>
+    </div>
+    <div class="col">
+      <h2>Grids</h2>
+    </div>
+    <div class="col">
+      <h2>Investment</h2>
+    </div>
+    <div class="col">
+      <h2>Profit</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <h2>{{simulation.strategy.maxPrice | number :'1.2-2'}}</h2>
+    </div>
+    <div class="col">
+      <h2>{{simulation.strategy.minPrice | number :'1.2-2'}}</h2>
+    </div>
+    <div class="col">
+      <h2> {{simulation.strategy.grids}}</h2>
+    </div>
+    <div class="col">
+      <h2> {{simulation.strategy.investment}}</h2>
+    </div>
+    <div class="col">
+      <h2 [ngStyle]="{'color': (simulation.profitLoss > 0) ? 'green' : 'red'}"> {{profit}}</h2>
+    </div>
+  </div>
+</div>
+
+
+<h1> Chart </h1>
+
 <div id="chart">
   <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
     [yaxis]="chartOptions.yaxis" [title]="chartOptions.title" [tooltip]="chartOptions.tooltip"
     [annotations]="chartOptions.annotations" #chart></apx-chart>
 </div>
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" (click)="prevPage()">Previous Page</a></li>
+    <li class="page-item" *ngFor="let page of pageNumbers; index as i" (click)="goToPage(i)"><a
+        class="page-link">{{page}}</a>
+    </li>
+    <li class="page-item"><a class="page-link" (click)="nextPage()">Next</a></li>
+  </ul>
+</nav>
+
+<h1> Orders </h1>
+
+<table class=" table table-bordered table-striped table-striped">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Side</th>
+      <th scope="col">Price</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Execution Time</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let order of orders; index as i" [ngStyle]="{'color': (order.side === 'BUY') ? 'green' : 'red'}">
+      <th scope="row">{{i+1}}</th>
+      <td>{{order.side }}</td>
+      <td>{{order.orderTemplate.price | number :'1.2-2'}} </td>
+      <td>{{order.orderTemplate.quantity}} </td>
+      <td>{{ order.filledAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+      <td>{{ order.status}}</td>
+    </tr>
+  </tbody>
+</table>

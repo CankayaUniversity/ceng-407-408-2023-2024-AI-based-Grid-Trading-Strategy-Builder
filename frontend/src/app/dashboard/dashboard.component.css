@@ -1,5 +1,6 @@
 /* Genel stil */
 
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700");
 
 /* Sol menü stil */
 .sidebar {
@@ -44,8 +45,9 @@
   height: 1.25rem;
   margin-right: 12px;
 }
-.main-title{
-  color:#008000;
+
+.main-title {
+  color: #008000;
 }
 
 /* Ana içerik alanı stil */
@@ -59,7 +61,7 @@
   font-weight: bold;
   color: #4B5563;
   margin-bottom: 24px;
-  padding-left:10px;
+  padding-left: 10px;
 }
 
 .main-content p {
@@ -67,30 +69,34 @@
   color: #6B7280;
   margin-bottom: 24px;
 }
-.img-logo{
+
+.img-logo {
   width: 40px;
   height: 40px;
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700");
 
-.logo{
+
+.logo {
   text-align: center;
   display: flex;
   margin: 10px 0 0 10px;
 }
-.logo img{
+
+.logo img {
   width: 45px;
   height: 45px;
   border-radius: 50%;
 }
-.logo span{
+
+.logo span {
   font-weight: bold;
   padding-left: 15px;
   font-size: 18px;
   text-transform: uppercase;
 }
-a{
+
+a {
   position: relative;
   color: rgb(85, 83, 83);
   font-size: 14px;
@@ -98,7 +104,8 @@ a{
   width: 280px;
   padding: 10px;
 }
-nav .fas{
+
+nav .fas {
   position: relative;
   width: 70px;
   height: 40px;
@@ -106,15 +113,18 @@ nav .fas{
   font-size: 20px;
   text-align: center;
 }
-.nav-item{
+
+.nav-item {
   position: relative;
   top: 6px;
   margin-left: 10px;
 }
-a:hover{
+
+a:hover {
   background: #eee;
 }
-.logout{
+
+.logout {
   position: absolute;
   bottom: 0;
 }

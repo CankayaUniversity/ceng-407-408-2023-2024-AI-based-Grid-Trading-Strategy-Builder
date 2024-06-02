@@ -1,15 +1,51 @@
 <div class="history-container">
-  <h2 class="history-header">Geçmiş Stratejiler</h2>
+  <h2 class="history-header">Past Strategies</h2>
   <div *ngIf="strategies.length > 0; else noStrategies" class="strategy-list">
-    <ul>
-      <li *ngFor="let strategy of strategies" class="strategy-item">
-        {{ strategy.name }} - {{ strategy.date }}
+    <!-- <ul>
+      <li *ngFor="let strategy of strategies; index as i" class="strategy-item">
+        Currency Pair: {{ strategy.currencyPair.symbol }} - Min Grids: {{strategy.minGrids}} - Max Grids:
+        {{strategy.maxGrids}} - {{ strategy.createdAt |
+        date: 'dd/MM/yyyy' }}
       </li>
-    </ul>
+    </ul> -->
+
+    <table class="table table-bordered table-striped table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Symbol</th>
+          <th scope="col">Max Grids</th>
+          <th scope="col">Min Grids</th>
+          <th scope="col">Max Price</th>
+          <th scope="col">Min Price</th>
+          <th scope="col">Date</th>
+          <th scope="col">Status</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let strategy of strategies; index as i">
+          <th scope="row">{{i+1}}</th>
+          <td>{{ strategy.currencyPair.symbol }}</td>
+          <td>{{strategy.maxGrids}} </td>
+          <td>{{strategy.minGrids}} </td>
+          <td>{{strategy.maxPrice}} </td>
+          <td>{{strategy.minPrice}} </td>
+          <td>{{ strategy.createdAt | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ strategy.status}}</td>
+          <td>
+            <button *ngIf="strategy.status =='COMPLETED'" type="button" class="btn btn-success btn-sm"
+              (click)="viewStrategy(strategy.id)">View</button>
+            <button *ngIf="strategy.status =='NEW'" type="button" class="btn btn-primary btn-sm"
+              (click)="startStrategy(strategy.id)">Start</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <ng-template #noStrategies>
-    <div class="no-strategies-message">
+    <div class=" no-strategies-message">
       <p>Henüz hiç strateji bulunmamaktadır.</p>
     </div>
   </ng-template>

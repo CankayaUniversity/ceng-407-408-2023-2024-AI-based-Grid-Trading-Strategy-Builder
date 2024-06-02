@@ -25,10 +25,17 @@ import { PanelComponent } from './panel/panel.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AppRoutingModule } from './app.routes';
 import { HistoryStrategiesComponent } from './history-strategies/history-strategies.component';
+import { authInterceptorProviders } from './_helpers/auth.interceptor';
+import { LoginComponent } from './login/login.component';
+import { ErrorComponent } from './error/error.component';
+import { SignupComponent } from './signup/signup.component';
 @NgModule({
   declarations: [
     AppComponent,
+    LoginComponent,
+    ErrorComponent,
     HomeComponent,
+    SignupComponent,
     RegisterComponent,
     PanelComponent,
     DashboardComponent,
@@ -48,8 +55,9 @@ import { HistoryStrategiesComponent } from './history-strategies/history-strateg
     AppRoutingModule,
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    authInterceptorProviders
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

@@ -1,0 +1,39 @@
+<div class="form-container">
+  <h1>Create Spot Grid</h1>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="minPrice">Symbol</label>
+      <select formControlName="symbol">
+        <option *ngFor="let c of symbols" [ngValue]="c">{{ c }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="minPrice">Time Interval</label>
+      <select formControlName="timeInterval">
+        <option *ngFor="let interval of timeIntervals" [value]="interval">{{interval}}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="minPrice">Min. Price</label>
+      <input type="number" id="minPrice" formControlName="minPrice" name="minPrice" placeholder="Min Price" />
+    </div>
+    <div class="form-group">
+      <label for="maxPrice">Max. Price</label>
+      <input type="number" id="maxPrice" formControlName="maxPrice" name="maxPrice" placeholder="Max Price" />
+    </div>
+    <div class="form-group">
+      <label for="minGrids">Min Grids</label>
+      <input type="number" id="minGrids" formControlName="minGrids" name="minGrids" placeholder="Min Grids" />
+    </div>
+    <div class="form-group">
+      <label for="maxGrids">Max Grids</label>
+      <input type="number" id="maxGrids" formControlName="maxGrids" name="maxGrids" placeholder="Max Grids" />
+    </div>
+    <div class="form-group">
+      <label for="investment">Investment</label>
+      <input type="number" id="investment" formControlName="investment" name="investment" placeholder="Investment" />
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+</div>

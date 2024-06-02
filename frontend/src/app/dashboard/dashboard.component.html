@@ -1,29 +1,27 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
 <div class="container-fluid">
   <div class="row">
     <!-- Sol menü -->
     <div class="col-md-3 sidebar">
       <nav>
         <ul>
-          <li><a routerLink="/dashboard" class="logo">
+          <li><a routerLink="/dashboard/home" class="logo">
               <img src="assets/logo.jpg" alt="">
               <span class="nav-item main-title">GRIDY</span>
             </a>
           </li>
-          <li><a routerLink="/dashboard">
+          <li><a routerLink="/dashboard/home">
               <i class="fas fa-home"></i>
               <span class="nav-item">Home</span>
             </a></li>
-          <li><a routerLink="/dashboard/mychart">
-              <i class="fas fa-chart-bar"></i>
-              <span class="nav-item">Chart</span>
+          <li><a routerLink="/dashboard/new-strategy">
+              <i class="fas fa-plus"></i>
+              <span class="nav-item">New<br>Strategy</span>
             </a></li>
           <li><a routerLink="/dashboard/history-strategies">
               <i class="fas fa-tasks"></i>
-              <span class="nav-item">Past Strategies</span>
+              <span class="nav-item">Past<br>Strategies</span>
             </a></li>
-          <li><a routerLink="/lagout">
+          <li><a (click)="logout()">
               <i class="fas fa-sign-out-alt"></i>
               <span class="nav-item">Logout</span>
             </a></li>
