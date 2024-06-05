@@ -74,8 +74,6 @@ export class MychartComponent implements OnInit {
           delay: 150,
         },
       },
-      height: 450,
-      width: 1500,
     },
     xaxis: {
       type: 'datetime', // X ekseninin türü kategori olmalı
@@ -144,8 +142,8 @@ export class MychartComponent implements OnInit {
     this.pageNumbers = Array(this.maxPage).fill(0).map((x, i) => i + 1);
     const originalCandleData = candleData.data.content.map((item: any) => ({
       ...item,
-      openTime: new Date(item.openTime),
-      closeTime: new Date(item.closeTime),
+      openTime: new Date(item.openTime).getTime() + 3 * 60 * 60 * 1000,
+      closeTime: new Date(item.closeTime).getTime() + 3 * 60 * 60 * 1000,
     }));
 
     // Son 50 veriyi göstermek için
@@ -195,7 +193,7 @@ export class MychartComponent implements OnInit {
         const y = isUpward ? yPosition + yOffset : yPosition - yOffset;
 
         annotations.push({
-          x: index, // Mumun indeksi
+          x: candle.openTime.toString(), // Mumun indeksi
           y: y,
           marker: {
             size: 1,
@@ -215,7 +213,7 @@ export class MychartComponent implements OnInit {
         data: candleDataLimited.map(
           (candle: CandleItem, index: number) => {
             return {
-              x: index, // Mumun indeksi
+              x: candle.openTime, // Mumun indeksi
               y: [
                 candle.openPrice,
                 candle.highPrice,

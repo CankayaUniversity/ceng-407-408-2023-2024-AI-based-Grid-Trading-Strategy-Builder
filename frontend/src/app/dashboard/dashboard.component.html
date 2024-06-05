@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row">
     <!-- Sol menü -->
-    <div class="col-md-3 sidebar">
+    <div class="col-md-2 sidebar">
       <nav>
         <ul>
           <li><a routerLink="/dashboard/home" class="logo">
@@ -19,7 +19,7 @@
             </a></li>
           <li><a routerLink="/dashboard/history-strategies">
               <i class="fas fa-tasks"></i>
-              <span class="nav-item">Past<br>Strategies</span>
+              <span class="nav-item">History</span>
             </a></li>
           <li><a (click)="logout()">
               <i class="fas fa-sign-out-alt"></i>
@@ -29,7 +29,7 @@
       </nav>
     </div>
     <!-- Ana içerik alanı -->
-    <div class="col-md-9 main-content">
+    <div class="col-md-10 main-content">
       <router-outlet></router-outlet>
     </div>
   </div>
